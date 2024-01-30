@@ -1,0 +1,7 @@
+[user]
+    name = aba2222  #git用户
+    email = ABCSSS2021@outlook.com #用户邮箱
+    
+/obj/
+/.vscode/
+.gitconfig

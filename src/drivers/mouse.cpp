@@ -50,6 +50,7 @@ uint32_t MouseDriver::HandleInterrupt(uint32_t esp) {
     if (offset == 0) {
         handler->OnMouseMove(buffer[1], -buffer[2]);
         
+        //TODO
         for (uint8_t i = 0; i < 3; i++) {
             if ((buffer[0] & (1 << i)) != (buttons & (1 << i))) {
                 if (buttons & (1 << i)) {

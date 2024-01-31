@@ -1,0 +1,9 @@
+{
+    "[dockercompose]": {
+        "editor.tabSize": 4
+    },
+    "[yaml]": {
+        "editor.tabSize": 4
+    },
+    "C_Cpp.errorSquiggles": "disabled"
+}

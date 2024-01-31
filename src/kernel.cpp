@@ -7,11 +7,15 @@
 #include "drivers/keyboard.h"
 #include "drivers/mouse.h"
 #include "drivers/vga.h"
+#include "gui/desktop.h"
 
 using namespace myos;
 using namespace myos::common;
+using namespace myos::gui;
 using namespace myos::drivers;
 using namespace myos::hardwarecommunication;
+
+#define GMODE
 
 void printf(const char* str){
     static uint16_t* VideoMemory = (uint16_t*)0xb8000;
@@ -133,23 +137,46 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber){
 
     InterruptManager interrupts(0x20, &gdt);
 
+    #ifdef GMODE
+        Desktop desktop(320,200, 0x00,0x00,0xA8);
+    #endif
+
     DriverManger drvManger;
     PrintKeyboardEventHandler kbhandler;
     KeyBoardDriver keyboard(&interrupts, &kbhandler);
     drvManger.AddDriver(&keyboard);
     
-    MouseToConsole mousehandler;
-    MouseDriver mouse(&interrupts, &mousehandler);
+    #ifdef GMODE
+        MouseDriver mouse(&interrupts, &desktop);
+    #else
+        MouseToConsole mousehandler;
+        MouseDriver mouse(&interrupts, &mousehandler);
+    #endif
     drvManger.AddDriver(&mouse);
     
     PeripheralComponentInterconnectController PCIController;
     PCIController.SelectDrivers(&drvManger, &interrupts);
-    //VideoGraphicsArray vga;
+
+    #ifdef GMODE  
+        VideoGraphicsArray vga;
+    #endif
 
     drvManger.ActivateAll(); 
 
     interrupts.Activate();
-    //vga.SetMode(320, 200, 8);
     
-    while(1);
+    #ifdef GMODE
+        vga.SetMode(320, 200, 8);
+        vga.SetMode(320,200,8);
+        Window win1(&desktop, 10, 10, 20, 20, 0xA8, 0x00, 0x00);
+        desktop.AddChild(&win1);
+        Window win2(&desktop, 40,15,30,30, 0x00,0xA8,0x00);
+        desktop.AddChild(&win2);
+    #endif
+
+    while(1) {
+        #ifdef GMODE
+            desktop.Draw(&vga);
+        #endif
+    }
 }

@@ -13,9 +13,9 @@ namespace myos {
             MouseEventHandler();
 
             virtual void OnActivate();
-            virtual void OnMouseDown(myos::common::uint8_t button);
-            virtual void OnMouseUp(myos::common::uint8_t button);
-            virtual void OnMouseMove(myos::common::int8_t x, myos::common::int8_t y);
+            virtual void OnMouseDown(common::uint8_t button);
+            virtual void OnMouseUp(common::uint8_t button);
+            virtual void OnMouseMove(common::int8_t x, common::int8_t y);
         };
 
         class MouseDriver : public myos::hardwarecommunication::InterruptHandler, public Driver {

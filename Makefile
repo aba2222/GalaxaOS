@@ -6,6 +6,7 @@ LDPARAMS = -melf_i386  -no-pie
 objects = obj/loader.o \
  		  obj/kernel.o \
 		  obj/gdt.o \
+		  obj/multitasking.o \
 		  obj/memorymanager.o \
 		  obj/hardwarecommunication/interrupts.o \
 		  obj/hardwarecommunication/interruptstubs.o \

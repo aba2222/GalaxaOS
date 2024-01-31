@@ -1,5 +1,6 @@
 #include "common/types.h"
 #include "gdt.h"
+#include "multitasking.h"
 #include "memorymanager.h"
 #include "hardwarecommunication/interrupts.h"
 #include "hardwarecommunication/pci.h"
@@ -103,6 +104,19 @@ private:
     int8_t x, y;
 };
 
+//more task
+void TaskA() {
+    while (1) {
+        printf("A");
+    }
+}
+
+void TaskB() {
+    while (1) {
+        printf("B");
+    }
+}
+
 typedef void (*constructor)();
 extern "C" constructor start_ctors;
 extern "C" constructor end_ctors;
@@ -115,6 +129,12 @@ extern "C" void callConstructors(){
 
 extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber){
     GlobalDescriptorTable gdt;
+
+    TaskManager taskmanager;
+    //Task task1(&gdt, TaskA);
+    //Task task2(&gdt, TaskB);
+    //taskmanager.AddTask(&task1);
+    //taskmanager.AddTask(&task2);
 
     //mmanager
     size_t heap = 10 * 1024 * 1024;
@@ -135,7 +155,7 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber){
 
     printf("\n\n");
 
-    InterruptManager interrupts(0x20, &gdt);
+    InterruptManager interrupts(0x20, &gdt, &taskmanager);
 
     #ifdef GMODE
         Desktop desktop(320,200, 0x00,0x00,0xA8);

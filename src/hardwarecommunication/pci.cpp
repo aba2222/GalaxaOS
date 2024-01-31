@@ -1,5 +1,6 @@
 #include "hardwarecommunication/pci.h"
 
+using namespace myos;
 using namespace myos::common;
 using namespace myos::hardwarecommunication;
 using namespace myos::drivers;
@@ -92,18 +93,23 @@ void PeripheralComponentInterconnectController::SelectDrivers(DriverManger* driv
 }
 
 Driver* PeripheralComponentInterconnectController::GetDriver(PeripheralComponentInterconnectDeviceDescriptor dev, myos::hardwarecommunication::InterruptManager* interrupts) {
+    Driver* driver = 0;
     switch (dev.vendor_id) {
     case 0x1022: //AMD
         switch (dev.device_id) {
         case 0x2000:
-            printf("amd ");
+            //driver = (amd_am79c973) MemoryManager::activeMemoryManager->malloc(sizeof(amd_am79c973));
+            //if(driver != 0) {
+            //    new (driver) amd_am79c973(...);
+            //}
+            printf("AMD am79c973");
             break;
         }
         break;
     case 0x8086: //Intel
         switch (dev.device_id) {
         case 0x2000:
-            printf("intel ");
+            printf("Intel ");
             break;
         }
         break;
@@ -118,7 +124,7 @@ Driver* PeripheralComponentInterconnectController::GetDriver(PeripheralComponent
         }
         break;
     }
-    return 0;
+    return driver;
 }
 
 PeripheralComponentInterconnectDeviceDescriptor PeripheralComponentInterconnectController::GetDeviceDescriptor(uint8_t bus, uint8_t device, uint8_t function) {

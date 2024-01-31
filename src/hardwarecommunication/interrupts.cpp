@@ -1,5 +1,6 @@
 #include "hardwarecommunication/interrupts.h"
 
+using namespace myos;
 using namespace myos::common;
 using namespace myos::hardwarecommunication;
 
@@ -41,13 +42,14 @@ void InterruptManager::SetInterruptDescriptorTableEntry(
     interruptDescriptorTable[interruptNumber].reserved = 0;
 }
 
-InterruptManager::InterruptManager(uint16_t hardwareInterruptOffset, GlobalDescriptorTable* gdt) 
+InterruptManager::InterruptManager(uint16_t hardwareInterruptOffset, GlobalDescriptorTable* gdt, TaskManager* taskManager) 
     : picMasterCommand(0x20),
     picMasterData(0x21),
     picSlaveCommand(0xA0),
     picSlaveData(0xA1) {
+    this->taskManager = taskManager;
     this->hardwareInterruptOffset = hardwareInterruptOffset;
-    uint16_t CodeSegment = (gdt->CodeSegmentSelector()) >> 3;
+    uint16_t CodeSegment = (gdt->CodeSegmentSelector()) << 3;
 
     const uint8_t IDT_INTERRUPT_GATE = 0xe;
     for (uint16_t i = 0; i < 256; i++) {
@@ -152,6 +154,10 @@ uint32_t InterruptManager::DoHandleInterrupt(uint8_t interruptNumber, uint32_t e
     }else if (interruptNumber != hardwareInterruptOffset) {
         printf("UNHADLED INTERRUPT 0X");
         printfHex(interruptNumber);
+    }
+
+    if(interruptNumber == hardwareInterruptOffset) {
+        esp = (uint32_t)taskManager->Schedule((CPUState*) esp);
     }
 
     if (hardwareInterruptOffset <= interruptNumber && interruptNumber < hardwareInterruptOffset + 16) {

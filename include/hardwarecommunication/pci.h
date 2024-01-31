@@ -5,6 +5,7 @@
 #include "hardwarecommunication/port.h"
 #include "hardwarecommunication/interrupts.h"
 #include "drivers/driver.h"
+#include "memorymanager.h"
 
 
 namespace myos {

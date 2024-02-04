@@ -2,6 +2,7 @@
 #include "gdt.h"
 #include "multitasking.h"
 #include "memorymanager.h"
+#include "syscalls.h"
 #include "hardwarecommunication/interrupts.h"
 #include "hardwarecommunication/pci.h"
 #include "drivers/driver.h"
@@ -9,14 +10,19 @@
 #include "drivers/mouse.h"
 #include "drivers/vga.h"
 #include "gui/desktop.h"
+#include "drivers/amd_am79c973.h"
+#include "drivers/ata.h"
+#include "filesystem/dospart.h"
+#include "filesystem/fat.h"
 
 using namespace myos;
 using namespace myos::common;
 using namespace myos::gui;
 using namespace myos::drivers;
+using namespace myos::filesystem;
 using namespace myos::hardwarecommunication;
 
-#define GMODE
+//#define GMODE1
 
 void printf(const char* str){
     static uint16_t* VideoMemory = (uint16_t*)0xb8000;
@@ -104,16 +110,20 @@ private:
     int8_t x, y;
 };
 
+void SysCallPrint(const char* str) {
+    asm("int $0x80" : : "a" (4), "b" (str));
+}
+
 //more task
 void TaskA() {
     while (1) {
-        printf("A");
+        SysCallPrint((const char*)"A");
     }
 }
 
 void TaskB() {
     while (1) {
-        printf("B");
+        SysCallPrint((const char*)"B");
     }
 }
 
@@ -127,7 +137,7 @@ extern "C" void callConstructors(){
     }
 }
 
-extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber){
+extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magicnumber){
     GlobalDescriptorTable gdt;
 
     TaskManager taskmanager;
@@ -135,6 +145,27 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber){
     //Task task2(&gdt, TaskB);
     //taskmanager.AddTask(&task1);
     //taskmanager.AddTask(&task2);
+
+    printf("magicnumber: 0x");
+    printfHex((magicnumber >> 24) & 0xff);
+    printfHex((magicnumber >> 16) & 0xff);
+    printfHex((magicnumber >> 8) & 0xff);
+    printfHex((magicnumber >> 0) & 0xff);
+    printf("   ");
+
+    printf("vbe_mode: 0x");
+    printfHex(((multiboot_structure->vbe_mode) >> 24) & 0xff);
+    printfHex(((multiboot_structure->vbe_mode) >> 16) & 0xff);
+    printfHex(((multiboot_structure->vbe_mode) >> 8) & 0xff);
+    printfHex(((multiboot_structure->vbe_mode) >> 0) & 0xff);
+    printf(" ");
+
+    printf("vbe_mode_info->width: 0x");
+    printfHex(((multiboot_structure->vbe_mode_info) >> 24) & 0xff);
+    printfHex(((multiboot_structure->vbe_mode_info) >> 16) & 0xff);
+    printfHex(((multiboot_structure->vbe_mode_info) >> 8) & 0xff);
+    printfHex(((multiboot_structure->vbe_mode_info) >> 0) & 0xff);
+    printf("\n");
 
     //mmanager
     size_t heap = 10 * 1024 * 1024;
@@ -144,20 +175,22 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber){
     printfHex(((*memupper) >> 16) & 0xff);
     printfHex(((*memupper) >> 8) & 0xff);
     printfHex(((*memupper) >> 0) & 0xff);
+    printf("   ");
 
     MemoryManager memoryManager(heap, (*memupper) * 1024 - heap - 10 * 1024);
 
-    printf("\nheap: 0x");
+    printf("heap: 0x");
     printfHex((heap >> 24) & 0xff);
     printfHex((heap >> 16) & 0xff);
     printfHex((heap >> 8) & 0xff);
     printfHex((heap >> 0) & 0xff);
 
-    printf("\n\n");
+    printf("\n-----init1-----\n");
 
     InterruptManager interrupts(0x20, &gdt, &taskmanager);
+    SysCallHandler syscalls(&interrupts, 0x80);
 
-    #ifdef GMODE
+    #ifdef GMODE1
         Desktop desktop(320,200, 0x00,0x00,0xA8);
     #endif
 
@@ -166,7 +199,7 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber){
     KeyBoardDriver keyboard(&interrupts, &kbhandler);
     drvManger.AddDriver(&keyboard);
     
-    #ifdef GMODE
+    #ifdef GMODE1
         MouseDriver mouse(&interrupts, &desktop);
     #else
         MouseToConsole mousehandler;
@@ -177,17 +210,48 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber){
     PeripheralComponentInterconnectController PCIController;
     PCIController.SelectDrivers(&drvManger, &interrupts);
 
-    #ifdef GMODE  
+    #ifdef GMODE1
         VideoGraphicsArray vga;
     #endif
 
     drvManger.ActivateAll(); 
 
-    interrupts.Activate();
+    //amd_am79c973* eth0 = (amd_am79c973*)(drvManger.drivers[2]);
+    //eth0->Send((uint8_t*)"Hello Network", 13);
+
+    printf("\nS-ATA primary master: ");
+    AdvancedTechnologyAttachment ata0m(true, 0x1F0);
+    ata0m.Identify();
     
-    #ifdef GMODE
+    printf("   S-ATA primary slave: ");
+    AdvancedTechnologyAttachment ata0s(false, 0x1F0);
+    ata0s.Identify();
+
+    PartitionManger partManger;
+    DOSPartitonTable::ReadPartitionTable(&ata0s, &partManger);
+    FatPartition* part1 = partManger.GetPartitionList(1);
+    DirectoriesFat32 part1Dirent[32] = {0};
+    part1->GetFatFileList((DirectoriesFat32*)&part1Dirent);
+    part1->ReadTxtFile(part1Dirent[3]);
+
+    //printf("\nS-ATA secondary master: ");
+    //AdvancedTechnologyAttachment ata1m(true, 0x170);
+    //ata1m.Identify();
+    
+    //printf("   S-ATA secondary slave: ");
+    //AdvancedTechnologyAttachment ata1s(false, 0x170);
+    //ata1s.Identify();
+    // third: 0x1E8
+    // fourth: 0x168
+
+    printf("\n");
+
+    interrupts.Activate();
+
+    printf("\n-----Init Done-----\n");
+    
+    #ifdef GMODE1
         vga.SetMode(320, 200, 8);
-        vga.SetMode(320,200,8);
         Window win1(&desktop, 10, 10, 20, 20, 0xA8, 0x00, 0x00);
         desktop.AddChild(&win1);
         Window win2(&desktop, 40,15,30,30, 0x00,0xA8,0x00);
@@ -195,7 +259,7 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber){
     #endif
 
     while(1) {
-        #ifdef GMODE
+        #ifdef GMODE1
             desktop.Draw(&vga);
         #endif
     }

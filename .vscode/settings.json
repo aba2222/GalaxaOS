@@ -5,5 +5,5 @@
     "[yaml]": {
         "editor.tabSize": 4
     },
-    "C_Cpp.errorSquiggles": "disabled",
+    "C_Cpp.errorSquiggles": "disabled"
 }

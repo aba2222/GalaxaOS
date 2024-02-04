@@ -1,4 +1,6 @@
 #include "hardwarecommunication/pci.h"
+#include "drivers/amd_am79c973.h"
+#include "memorymanager.h"
 
 using namespace myos;
 using namespace myos::common;
@@ -57,7 +59,7 @@ void PeripheralComponentInterconnectController::SelectDrivers(DriverManger* driv
             int numFunctions = DeviceHasFunctions((uint8_t)bus, device) ? 8 : 1;
             for(uint8_t function = 0; function < numFunctions; function++) {
                 PeripheralComponentInterconnectDeviceDescriptor dev = GetDeviceDescriptor(bus, device, function);
-                if(dev.vendor_id == 0 || dev.vendor_id == 0xffff) continue;
+                if(dev.vendor_id == 0 || dev.vendor_id == 0xffff) break; //break or conitune?
 
                 printf("PCI BUS ");
                 printfHex(bus & 0xff);
@@ -81,28 +83,33 @@ void PeripheralComponentInterconnectController::SelectDrivers(DriverManger* driv
                     if (bar.address && (bar.type == InputOutput)) {
                         dev.portBase = (uint32_t)bar.address;
                     }
-
-                    Driver* driver = GetDriver(dev, interrupts);
-                    if (driver != 0) {
-                        driverManger->AddDriver(driver);
-                    }
+                    //In this?
+                }
+                Driver* driver = GetDriver(dev, interrupts);
+                if (driver != 0) {//<-In this?
+                   driverManger->AddDriver(driver);
                 }
             }
         }
     }
 }
 
-Driver* PeripheralComponentInterconnectController::GetDriver(PeripheralComponentInterconnectDeviceDescriptor dev, myos::hardwarecommunication::InterruptManager* interrupts) {
+Driver* PeripheralComponentInterconnectController::GetDriver(PeripheralComponentInterconnectDeviceDescriptor dev, hardwarecommunication::InterruptManager* interrupts) {
     Driver* driver = 0;
     switch (dev.vendor_id) {
     case 0x1022: //AMD
         switch (dev.device_id) {
         case 0x2000:
-            //driver = (amd_am79c973) MemoryManager::activeMemoryManager->malloc(sizeof(amd_am79c973));
-            //if(driver != 0) {
-            //    new (driver) amd_am79c973(...);
-            //}
-            printf("AMD am79c973");
+            printf("am79c973");
+            driver = (amd_am79c973*) MemoryManager::activeMemoryManager->malloc(sizeof(amd_am79c973));
+            if(driver != 0) {
+                new (driver) amd_am79c973(&dev, interrupts);
+            }
+            else {
+                printf("instantiation failed");
+            }
+
+            return driver;
             break;
         }
         break;
@@ -119,7 +126,7 @@ Driver* PeripheralComponentInterconnectController::GetDriver(PeripheralComponent
     case 0x03:
         switch (dev.subclass_id) {
         case 0x00: //VGA
-            printf("VGA ");
+            printf("V");
             break;
         }
         break;

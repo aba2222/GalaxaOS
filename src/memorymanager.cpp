@@ -104,3 +104,13 @@ void operator delete[](void* ptr) {
         MemoryManager::activeMemoryManager->free(ptr);
     }
 }
+
+void *myos::memcpy(void * _dest, void *_src, uint16_t _n)
+{
+    char *sp = (char*) _src;
+    char *dp = (char*) _dest;
+    for(; _n != 0; _n--) {
+		*dp++ = *sp++;
+	}
+	return _dest;
+}

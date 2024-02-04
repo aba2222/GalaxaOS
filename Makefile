@@ -8,6 +8,7 @@ objects = obj/loader.o \
 		  obj/gdt.o \
 		  obj/multitasking.o \
 		  obj/memorymanager.o \
+		  obj/syscalls.o \
 		  obj/hardwarecommunication/interrupts.o \
 		  obj/hardwarecommunication/interruptstubs.o \
 		  obj/hardwarecommunication/pci.o \
@@ -16,9 +17,13 @@ objects = obj/loader.o \
 		  obj/drivers/mouse.o \
 		  obj/drivers/vga.o \
 		  obj/drivers/driver.o \
+		  obj/drivers/ata.o \
+		  obj/drivers/amd_am79c973.o \
 		  obj/gui/widget.o \
 		  obj/gui/window.o \
 		  obj/gui/desktop.o \
+		  obj/filesystem/dospart.o\
+		  obj/filesystem/fat.o\
 
 obj/%.o: src/%.cpp
 	mkdir -p $(@D)

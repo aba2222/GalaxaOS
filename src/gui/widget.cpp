@@ -24,24 +24,24 @@ void Widget::GetFocus(Widget* widget) {
 }
 
 void Widget::ModelToScreen(int32_t &x, int32_t &y) {
-  if(parent != 0) parent->ModelToScreen(x, y);
+    if(parent != 0) parent->ModelToScreen(x, y);
 
-  x += this->x;
-  y += this->y;
+    x += this->x;
+    y += this->y;
 }
 
 void Widget::Draw(GraphicsContext* gc) {
-  int X=0;
-  int Y=0;
-  ModelToScreen(X, Y);
-  gc->FillRectangle(x, y, w, h, r, g, b); 
-  GetFocus(this);
+    int X=0;
+    int Y=0;
+    ModelToScreen(X, Y);
+    gc->FillRectangle(x, y, w, h, r, g, b); 
+    GetFocus(this);
 }
 
 void Widget::OnMouseDown(int32_t x, int32_t y, uint8_t button) {
-  if (Focussable) {
-    GetFocus(this);
-  }
+    if (Focussable) {
+      GetFocus(this);
+    }
 }
 void Widget::OnMouseUp(int32_t x, int32_t y, uint8_t button) {}
 void Widget::OnMouseMove(int32_t x, int32_t y, int32_t nx, int32_t ny) {}

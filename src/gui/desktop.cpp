@@ -17,6 +17,7 @@ Desktop::~Desktop() {
 }
 
 void Desktop::Draw(common::GraphicsContext* gc) {
+    gc->Redraw();
     CompositeWidget::Draw(gc);
     
     for(int i = 0; i < 4; i++)

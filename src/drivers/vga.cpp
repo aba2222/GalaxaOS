@@ -99,9 +99,12 @@ uint8_t* VideoGraphicsArray::GetFrameBufferSegment() {
     }
 }
 
+void VideoGraphicsArray::Redraw() {
+    memcpy(GetFrameBufferSegment(), videoBuffer, 320 * 200);
+}
+
 void VideoGraphicsArray::PutPixel(uint32_t x, uint32_t y, uint8_t colorindex) {
-    uint8_t* pixelAddress = GetFrameBufferSegment() + 320 * y + x;
-    *pixelAddress = colorindex;
+    videoBuffer[320 * y +x] = colorindex;
 }
 
 uint8_t VideoGraphicsArray ::GetColorIndex(uint8_t r, uint8_t g, uint8_t b) {

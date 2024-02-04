@@ -23,6 +23,7 @@ namespace myos {
     private:
         MemoryChunk* first;
     };
+    void *memcpy(void * _dest, void *_src, common::uint16_t _n);
 }
 
 void* operator new(myos::common::size_t size);
@@ -33,5 +34,6 @@ void* operator new[](myos::common::size_t size, void* ptr);
 
 void operator delete(void* ptr);
 void operator delete[](void* ptr);
+
 
 #endif

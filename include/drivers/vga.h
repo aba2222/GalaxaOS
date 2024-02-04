@@ -1,9 +1,10 @@
-#ifndef __MYOS__HARDWARECOMMUNICATION__VGA_H
-#define __MYOS__HARDWARECOMMUNICATION__VGA_H
+#ifndef __MYOS__DRIVERS__VGA_H
+#define __MYOS__DRIVERS__VGA_H
 
 #include "common/types.h"
 #include "hardwarecommunication/port.h"
 #include "drivers/driver.h"
+#include "memorymanager.h"
 
 namespace myos {  
     namespace drivers {
@@ -19,6 +20,8 @@ namespace myos {
 
             void FillRectangle(common::uint32_t x, common::uint32_t y, common::uint32_t w, common::uint32_t h, common::uint8_t r,
                                 common::uint8_t g, common::uint8_t b);
+
+            void Redraw();
         private:
             hardwarecommunication::Port8Bit miscPort;
             hardwarecommunication::Port8Bit crtcIndexPort;
@@ -36,6 +39,8 @@ namespace myos {
             void WriteRegisters(common::uint8_t* registers);
             common::uint8_t GetColorIndex(common::uint8_t r, common::uint8_t g, common::uint8_t b);
             common::uint8_t* GetFrameBufferSegment();
+
+            common::uint8_t videoBuffer[320 * 200 * 8];
         };
     }
 }

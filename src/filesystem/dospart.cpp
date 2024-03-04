@@ -65,8 +65,8 @@ void DOSPartitonTable::ReadPartitionTable(AdvancedTechnologyAttachment* hd, Part
 
         printfHex(mbr.primaryPartition[i].systemID);
         printf((const char*)" ");
-        FatPartition partitionA(hd, mbr.primaryPartition[i].startLba);
-        pm->AddPartition(&partitionA);
+        FatPartition* partitionA = new FatPartition(hd, mbr.primaryPartition[i].startLba);
+        pm->AddPartition(partitionA);
         printf((const char*)"\n");
     }
     return;

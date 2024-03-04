@@ -61,7 +61,8 @@ namespace myos {
                 ~FatPartition();
 
                 void GetFatFileList(DirectoriesFat32* returnData);
-                void ReadTxtFile(DirectoriesFat32 fatDirectories);
+                char* ReadFileName(DirectoriesFat32 fatDirectories);
+                char* ReadTxtFile(DirectoriesFat32 fatDirectories);
 
                 common::uint32_t partitionOffset;
             private:

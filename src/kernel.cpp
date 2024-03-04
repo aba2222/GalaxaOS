@@ -3,12 +3,14 @@
 #include "multitasking.h"
 #include "memorymanager.h"
 #include "syscalls.h"
+#include "shell.h"
 #include "hardwarecommunication/interrupts.h"
 #include "hardwarecommunication/pci.h"
 #include "drivers/driver.h"
 #include "drivers/keyboard.h"
 #include "drivers/mouse.h"
 #include "drivers/vga.h"
+#include "drivers/svga.h"
 #include "gui/desktop.h"
 #include "drivers/amd_am79c973.h"
 #include "drivers/ata.h"
@@ -23,6 +25,7 @@ using namespace myos::filesystem;
 using namespace myos::hardwarecommunication;
 
 //#define GMODE1
+#define GMODE2
 
 void printf(const char* str){
     static uint16_t* VideoMemory = (uint16_t*)0xb8000;
@@ -193,18 +196,27 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     #ifdef GMODE1
         Desktop desktop(320,200, 0x00,0x00,0xA8);
     #endif
+    #ifdef GMODE2
+        Desktop desktop(multiboot_structure->framebuffer_width, multiboot_structure->framebuffer_height, 0x87, 0xCE, 0xEB);
+    #endif
 
     DriverManger drvManger;
-    PrintKeyboardEventHandler kbhandler;
-    KeyBoardDriver keyboard(&interrupts, &kbhandler);
-    drvManger.AddDriver(&keyboard);
     
     #ifdef GMODE1
+        KeyBoardDriver keyboard(&interrupts, &desktop);
         MouseDriver mouse(&interrupts, &desktop);
     #else
-        MouseToConsole mousehandler;
-        MouseDriver mouse(&interrupts, &mousehandler);
+        #ifdef GMODE2
+            KeyBoardDriver keyboard(&interrupts, &desktop);
+            MouseDriver mouse(&interrupts, &desktop);
+        #else
+            PrintKeyboardEventHandler kbhandler;
+            MouseToConsole mousehandler;
+            KeyBoardDriver keyboard(&interrupts, &kbhandler);
+            MouseDriver mouse(&interrupts, &mousehandler);
+        #endif
     #endif
+    drvManger.AddDriver(&keyboard);
     drvManger.AddDriver(&mouse);
     
     PeripheralComponentInterconnectController PCIController;
@@ -213,8 +225,18 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     #ifdef GMODE1
         VideoGraphicsArray vga;
     #endif
+    #ifdef GMODE2
+        uint32_t pixelwidth = multiboot_structure->framebuffer_bpp / 8;
+        SuperVideoGraphicsArray svga((uint8_t*)multiboot_structure->framebuffer_addr, multiboot_structure->framebuffer_width, 
+                                      multiboot_structure->framebuffer_height, multiboot_structure->framebuffer_pitch,
+                                      multiboot_structure->framebuffer_bpp, pixelwidth);
+    #endif
 
     drvManger.ActivateAll(); 
+
+    Shell shell1;
+    shell1.ShellPrintf((const char*)"Hello Shell\nIt's a new Start.\n");
+    shell1.CleanText();
 
     //amd_am79c973* eth0 = (amd_am79c973*)(drvManger.drivers[2]);
     //eth0->Send((uint8_t*)"Hello Network", 13);
@@ -232,12 +254,13 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     FatPartition* part1 = partManger.GetPartitionList(1);
     DirectoriesFat32 part1Dirent[32] = {0};
     part1->GetFatFileList((DirectoriesFat32*)&part1Dirent);
-    part1->ReadTxtFile(part1Dirent[3]);
+    char* filename = part1->ReadFileName(part1Dirent[3]);
+    shell1.ShellPrintf((const char*)filename);
+    shell1.ShellPrintf((const char*)"\n");
 
     //printf("\nS-ATA secondary master: ");
     //AdvancedTechnologyAttachment ata1m(true, 0x170);
     //ata1m.Identify();
-    
     //printf("   S-ATA secondary slave: ");
     //AdvancedTechnologyAttachment ata1s(false, 0x170);
     //ata1s.Identify();
@@ -257,10 +280,16 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
         Window win2(&desktop, 40,15,30,30, 0x00,0xA8,0x00);
         desktop.AddChild(&win2);
     #endif
+    #ifdef GMODE2
+        Window win1(&desktop, 114, 230, 350, 230, 0xFF, 0x00, 0x00, (uint8_t*)"win1");
+        desktop.AddChild(&win1);
+        Widget string1(&win1, 5, 25, 330, 220, 0xFF, 0xFF, 0xFF, 2, shell1.GetShellText());
+        win1.AddChild(&string1);
+        Window win2(&desktop, 568,230,200,100, 0x00,0xFF,0x00,(uint8_t*)"win2");
+        desktop.AddChild(&win2);
+    #endif
 
     while(1) {
-        #ifdef GMODE1
-            desktop.Draw(&vga);
-        #endif
+        desktop.Draw(&svga);
     }
 }

@@ -105,12 +105,29 @@ void operator delete[](void* ptr) {
     }
 }
 
-void *myos::memcpy(void * _dest, void *_src, uint16_t _n)
+void *myos::memcpy(void *_dest, void *_src, size_t sz)
 {
-    char *sp = (char*) _src;
-    char *dp = (char*) _dest;
-    for(; _n != 0; _n--) {
-		*dp++ = *sp++;
-	}
-	return _dest;
+    void *r = _dest;
+
+    //先进行uint64_t长度的拷贝，一般而言，内存地址都是对齐的，
+    size_t n = sz & ~(sizeof(uint64_t) - 1);
+    uint64_t *src_u64 = (uint64_t *) _src;
+    uint64_t *dst_u64 = (uint64_t *) _dest;
+
+    while (n)
+    {
+        *dst_u64++ = *src_u64++;
+        n -= sizeof(uint64_t);
+    }
+
+    //将没有非8字节字长取整的部分copy
+    n = sz & (sizeof(uint64_t) - 1);
+    uint8_t *src_u8 = (uint8_t *) _src;
+    uint8_t *dst_u8 = (uint8_t *) _dest;
+    while (n-- )
+    {
+        (*dst_u8++ = *src_u8++);
+    }
+
+    return r;
 }

@@ -6,6 +6,7 @@ LDPARAMS = -melf_i386  -no-pie
 objects = obj/loader.o \
  		  obj/kernel.o \
 		  obj/gdt.o \
+		  obj/shell.o \
 		  obj/multitasking.o \
 		  obj/memorymanager.o \
 		  obj/syscalls.o \
@@ -16,6 +17,7 @@ objects = obj/loader.o \
 		  obj/drivers/keyboard.o \
 		  obj/drivers/mouse.o \
 		  obj/drivers/vga.o \
+		  obj/drivers/svga.o \
 		  obj/drivers/driver.o \
 		  obj/drivers/ata.o \
 		  obj/drivers/amd_am79c973.o \
@@ -23,7 +25,7 @@ objects = obj/loader.o \
 		  obj/gui/window.o \
 		  obj/gui/desktop.o \
 		  obj/filesystem/dospart.o\
-		  obj/filesystem/fat.o\
+		  obj/filesystem/fat.o \
 
 obj/%.o: src/%.cpp
 	mkdir -p $(@D)
@@ -34,7 +36,7 @@ obj/%.o: src/%.s
 	as ${ASPARAMS} -o $@ -c $<
 
 mykernel.bin: linker.ld ${objects}
-	ld ${LDPARAMS} -T $< -o $@ ${objects}
+	ld ${LDPARAMS} -T $< -o $@ font.o ${objects}
 
 install: mykernel.bin
 	sudo cp $< /boot/mykernel.bin

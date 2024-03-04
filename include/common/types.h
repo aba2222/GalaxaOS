@@ -40,6 +40,12 @@ namespace myos {
             uint16_t vbe_interface_seg;
             uint16_t vbe_interface_off;
             uint16_t vbe_interface_len;
+
+            uint64_t framebuffer_addr;
+            uint32_t framebuffer_pitch;
+            uint32_t framebuffer_width;
+            uint32_t framebuffer_height;
+            uint8_t framebuffer_bpp;
         } __attribute__((__packed__)) multiboot_info_t;
 
         struct vbe_mode_info_structure {

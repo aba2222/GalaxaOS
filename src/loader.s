@@ -1,12 +1,21 @@
 .set MAGIC, 0x1badb002
-.set FLAGS, (1<<0 | 1<<1)
-#.set FLAGS, 0x00000007 VIDEO_MODE(4)+MEMORY_INFO(2)+PAGE_ALIGN(1).equ MULTIBOOT_HEADER_CHECKSUM,-(MULTIBOOT_HEADER_MAGIC + MULTIBOOT_HEADER_FLAGS) & 0xFFFFFFFF.align
+#.set FLAGS, (1<<0 | 1<<1)
+.set FLAGS, 0x00000007 #VIDEO_MODE(4)+MEMORY_INFO(2)+PAGE_ALIGN(1)
 .set CHECKSUM, -(MAGIC + FLAGS)
 
 .section .multiboot
   .long MAGIC
   .long FLAGS
   .long CHECKSUM
+
+  # aout kludge (unused)
+  .long 0,0,0,0,0
+
+  # Video mode
+  .long   0       # Linear graphics please?(yes=0 no=1)
+  .long   1024       # Preferred width
+  .long   768       # Preferred height
+  .long   32      # Preferred pixel depth
 
 .section .text
 .extern _kernelMain

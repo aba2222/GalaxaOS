@@ -23,7 +23,7 @@ namespace myos {
     private:
         MemoryChunk* first;
     };
-    void *memcpy(void * _dest, void *_src, common::uint16_t _n);
+    void *memcpy(void * _dest, void *_src, common::uint32_t _n);
 }
 
 void* operator new(myos::common::size_t size);

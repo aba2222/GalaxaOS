@@ -25,26 +25,27 @@ void FatPartition::GetFatFileList(DirectoriesFat32* returnData) {
     hd->Read28(root_start, (uint8_t*)returnData, 32*sizeof(DirectoriesFat32));
 }
 
-void FatPartition::ReadTxtFile(DirectoriesFat32 fatDirectories) {
+char* FatPartition::ReadFileName(DirectoriesFat32 fatDirectories) {
     if(fatDirectories.name[0] == 0x00) {
         printf("NULL FILE");
-        return;
+        return 0;
     }
     if((fatDirectories.fileAttributes & 0xf) == 0xf) {
         printf("LONG NAME");
-        return;
+        return 0;
     }
 
     char* foo = "        \0";
     for(int j = 0; j < 8; j++) {
         foo[j] = fatDirectories.name[j];
     }
-    printf(foo);
+    return foo;
+}
 
+char* FatPartition::ReadTxtFile(DirectoriesFat32 fatDirectories) {
     if((fatDirectories.fileAttributes & 0x10) == 0x10) {
-        return;
+        return 0;
     }
-    
 
     uint32_t firstFileCluster = ((uint32_t)fatDirectories.firstClusterHi) << 16
                         | ((uint32_t)fatDirectories.firstClusterLow);
@@ -64,7 +65,7 @@ void FatPartition::ReadTxtFile(DirectoriesFat32 fatDirectories) {
             printf((const char*)buffer);
 
             if(++sectorOffset >= bpb.sectorsPerCluster) {
-                return;
+                return (char*)buffer;
             }
         }
 

@@ -7,16 +7,16 @@ using namespace myos::gui;
 
 Desktop::Desktop(common::uint32_t w, common::uint32_t h,
                 common::uint8_t r, common::uint8_t g, common::uint8_t b)
-:   CompositeWidget(0,0,0, w,h,r,g,b),
+:   CompositeWidget(0,0,0, w,h,r,g,b, 0, nullptr),
     MouseEventHandler() {
-    MouseX = w/2;
-    MouseY = h/2;
+    MouseX = 512;
+    MouseY = 384;
 }
 
 Desktop::~Desktop() {
 }
 
-void Desktop::Draw(common::GraphicsContext* gc) {
+void Desktop::Draw(common::SuperGraphicsContext* gc) {
     gc->Redraw();
     CompositeWidget::Draw(gc);
     
@@ -38,9 +38,6 @@ void Desktop::OnMouseUp(myos::common::uint8_t button) {
 }
 
 void Desktop::OnMouseMove(int8_t x, int8_t y) {
-    x /= 4;
-    y /= 4;
-    
     int32_t newMouseX = MouseX + x;
     if(newMouseX < 0) newMouseX = 0;
     if(newMouseX >= w) newMouseX = w - 1;
@@ -53,4 +50,13 @@ void Desktop::OnMouseMove(int8_t x, int8_t y) {
     
     MouseX = newMouseX;
     MouseY = newMouseY;
+}
+
+void Desktop::OnKeyDown(char str) {
+    //CompositeWidget::children[0]->OnKeyDown(str);
+    CompositeWidget::OnKeyDown(str);
+}
+
+void Desktop::OnKeyUp(char str) {
+    CompositeWidget::OnKeyDown(str);
 }

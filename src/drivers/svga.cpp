@@ -220,19 +220,18 @@ void SuperVideoGraphicsArray::PutChar(
 }
 
 void SuperVideoGraphicsArray::PutString(common::uint8_t* c, common::uint32_t cx, common::uint32_t cy, 
-                                        common::uint32_t fg, common::uint32_t bg, uint8_t w) {
+                                        common::uint32_t fg, common::uint32_t bg, common::uint16_t w) {
     int ax = cx;
-    int ay = cy;
+    //int ay = cy;
     for(int i = 0;(i <= 65535) && (c[i] != '\0'); i++) {
-        if(cx - ax >= w) {
-            cy += 26 + 1;
-            cx = ax;
-            continue;
-        }
         if(c[i] == '\n') {
             cy += 26 + 1;
             cx = ax;
             continue;
+        }
+        if(cx - ax >= w) {
+            cy += 18;
+            cx = ax;
         }
         PutChar(c[i], cx, cy, fg, bg);
 

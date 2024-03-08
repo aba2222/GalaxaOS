@@ -27,12 +27,10 @@ void FatPartition::GetFatFileList(DirectoriesFat32* returnData) {
 
 char* FatPartition::ReadFileName(DirectoriesFat32 fatDirectories) {
     if(fatDirectories.name[0] == 0x00) {
-        printf("NULL FILE");
-        return 0;
+        return "NULL FILE";
     }
     if((fatDirectories.fileAttributes & 0xf) == 0xf) {
-        printf("LONG NAME");
-        return 0;
+        return "LONG NAME";
     }
 
     char* foo = "        \0";
@@ -49,23 +47,42 @@ char* FatPartition::ReadTxtFile(DirectoriesFat32 fatDirectories) {
 
     uint32_t firstFileCluster = ((uint32_t)fatDirectories.firstClusterHi) << 16
                         | ((uint32_t)fatDirectories.firstClusterLow);
+    uint32_t nextFileCluster = firstFileCluster;
+    uint8_t* buffer = (uint8_t*)"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+    uint32_t fileSectors = data_start + bpb.sectorsPerCluster * (nextFileCluster - 2);
+    hd->Read28(fileSectors, buffer, 50);
+    buffer[fatDirectories.size] = '\0';
+    printf((const char*)buffer);
+    return (char*)buffer;
+}
+
+
+void FatPartition::ReadTxtFile(DirectoriesFat32 fatDirectories, myos::Shell* shellFor) {
+    if((fatDirectories.fileAttributes & 0x10) == 0x10) {
+        return;
+    }
+
+    uint32_t firstFileCluster = ((uint32_t)fatDirectories.firstClusterHi) << 16
+                        | ((uint32_t)fatDirectories.firstClusterLow);
 
 
     int32_t SIZE = fatDirectories.size;
     uint32_t nextFileCluster = firstFileCluster;
     uint8_t buffer[513];
+    //uint8_t* buffer = (uint8_t*)"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
     uint8_t fatBuffer[513];
     while(SIZE > 0) {
         uint32_t fileSectors = data_start + bpb.sectorsPerCluster * (nextFileCluster - 2);
         int sectorOffset = 0;
-
+        
         for(;SIZE > 0;SIZE -= 512) {
             hd->Read28(fileSectors + sectorOffset, buffer, 512);
             buffer[SIZE > 512 ? 512 : SIZE] = '\0';
-            printf((const char*)buffer);
+            //printf((const char*)buffer);
+            shellFor->ShellPrintf((const char*)buffer);
 
             if(++sectorOffset >= bpb.sectorsPerCluster) {
-                return (char*)buffer;
+                return;
             }
         }
 

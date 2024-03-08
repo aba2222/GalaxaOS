@@ -44,7 +44,7 @@ void Widget::Draw(SuperGraphicsContext* gc) {
             gc->FillRectangle(X, Y, w, h, r, g, b);
 
             gc->FillRectangle(X, Y, w, 20, 128, 128, 128);
-            gc->PutString((uint8_t*)this->stringText, X, Y, 0, (128 << 24) + (128 << 16) + (128 << 8), this->w);
+            gc->PutString((uint8_t*)this->stringText, X + 2, Y, 0, (128 << 24) + (128 << 16) + (128 << 8), this->w);
 
             gc->PutLine(X, Y, X + w, Y);
             gc->PutLine(X, Y + h, X + w, Y + h);
@@ -52,7 +52,7 @@ void Widget::Draw(SuperGraphicsContext* gc) {
             gc->PutLine(X + w, Y, X + w, Y + h);
             break;
         case 2:
-            gc->PutString((uint8_t*)this->stringText, X, Y, (r << 24) + (g << 16) + (b << 8), (parent->r << 24) + (parent->g << 16) + (parent->b << 8), this->w);
+            gc->PutString((uint8_t*)this->stringText, X, Y, (r << 24) + (g << 16) + (b << 8), (parent->r << 24) + (parent->g << 16) + (parent->b << 8), w);
             break;
         default:
             break;

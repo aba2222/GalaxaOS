@@ -15,7 +15,7 @@ namespace myos {
         void CleanText();       
     protected:
         common::uint8_t* shellText;
-        common::uint8_t x = 0, y = 0;
+        common::uint8_t x;
     };
 }
 

@@ -3,6 +3,7 @@
 
 #include "common/types.h"
 #include "drivers/ata.h"
+#include "shell.h"
 
 namespace myos {
     namespace filesystem {
@@ -63,6 +64,7 @@ namespace myos {
                 void GetFatFileList(DirectoriesFat32* returnData);
                 char* ReadFileName(DirectoriesFat32 fatDirectories);
                 char* ReadTxtFile(DirectoriesFat32 fatDirectories);
+                void ReadTxtFile(DirectoriesFat32 fatDirectories, myos::Shell* shellFor);
 
                 common::uint32_t partitionOffset;
             private:

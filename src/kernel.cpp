@@ -235,8 +235,6 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     drvManger.ActivateAll(); 
 
     Shell shell1;
-    shell1.ShellPrintf((const char*)"Hello Shell\nIt's a new Start.\n");
-    shell1.CleanText();
 
     //amd_am79c973* eth0 = (amd_am79c973*)(drvManger.drivers[2]);
     //eth0->Send((uint8_t*)"Hello Network", 13);
@@ -254,14 +252,13 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     FatPartition* part1 = partManger.GetPartitionList(1);
     DirectoriesFat32 part1Dirent[32] = {0};
     part1->GetFatFileList((DirectoriesFat32*)&part1Dirent);
-    char* filename = part1->ReadFileName(part1Dirent[3]);
+    char* filename = part1->ReadFileName(part1Dirent[1]);
     shell1.ShellPrintf((const char*)filename);
+    part1->ReadTxtFile(part1Dirent[1], &shell1);
     shell1.ShellPrintf((const char*)"\n");
 
-    //printf("\nS-ATA secondary master: ");
     //AdvancedTechnologyAttachment ata1m(true, 0x170);
     //ata1m.Identify();
-    //printf("   S-ATA secondary slave: ");
     //AdvancedTechnologyAttachment ata1s(false, 0x170);
     //ata1s.Identify();
     // third: 0x1E8
@@ -283,7 +280,7 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     #ifdef GMODE2
         Window win1(&desktop, 114, 230, 350, 230, 0xFF, 0x00, 0x00, (uint8_t*)"win1");
         desktop.AddChild(&win1);
-        Widget string1(&win1, 5, 25, 330, 220, 0xFF, 0xFF, 0xFF, 2, shell1.GetShellText());
+        Widget string1(&win1, 5, 25, 330, 200, 0xFF, 0xFF, 0xFF, 2, shell1.GetShellText());
         win1.AddChild(&string1);
         Window win2(&desktop, 568,230,200,100, 0x00,0xFF,0x00,(uint8_t*)"win2");
         desktop.AddChild(&win2);

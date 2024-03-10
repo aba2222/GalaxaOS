@@ -6,6 +6,7 @@
 #include "shell.h"
 #include "hardwarecommunication/interrupts.h"
 #include "hardwarecommunication/pci.h"
+#include "hardwarecommunication/times.h"
 #include "drivers/driver.h"
 #include "drivers/keyboard.h"
 #include "drivers/mouse.h"
@@ -66,6 +67,15 @@ void printfHex(uint8_t key) {
     foo[0] = hex[(key >> 4) & 0x0f];
     foo[1] = hex[key & 0x0f];
     printf((const char*)foo);
+}
+
+//delete!
+const char* numToChar(uint8_t key) {
+    char* foo = (char*)(new uint8_t* [2]);
+    const char* hex = "0123456789ABCDEF";
+    foo[0] = hex[(key >> 4) & 0x0f];
+    foo[1] = hex[key & 0x0f];
+    return (const char*)foo;
 }
 
 class PrintKeyboardEventHandler : public KeyBoardEventHandler {
@@ -144,9 +154,9 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     GlobalDescriptorTable gdt;
 
     TaskManager taskmanager;
-    //Task task1(&gdt, TaskA);
+    Task task1(&gdt, TaskA);
     //Task task2(&gdt, TaskB);
-    //taskmanager.AddTask(&task1);
+    taskmanager.AddTask(&task1);
     //taskmanager.AddTask(&task2);
 
     printf("magicnumber: 0x");
@@ -222,6 +232,8 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     PeripheralComponentInterconnectController PCIController;
     PCIController.SelectDrivers(&drvManger, &interrupts);
 
+    Times timeControl(0x70, 0x71);
+
     #ifdef GMODE1
         VideoGraphicsArray vga;
     #endif
@@ -278,15 +290,44 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
         desktop.AddChild(&win2);
     #endif
     #ifdef GMODE2
+        CompositeWidget tool1(&desktop, 0, 0, multiboot_structure->framebuffer_width, 30, 128, 128, 128, 0, (uint8_t*)"tool");
+        desktop.AddChild(&tool1);
+        Widget timeStringMonth(&tool1, 10, 3, 330, 200, 0xFF, 0xFF, 0xFF, 2, (uint8_t*)new uint8_t[4]);
+        Widget timeStringDate(&tool1, 35, 3, 330, 200, 0xFF, 0xFF, 0xFF, 2, (uint8_t*)new uint8_t[3]);
+        Widget timeStringHour(&tool1, 60, 3, 330, 200, 0xFF, 0xFF, 0xFF, 2, (uint8_t*)new uint8_t[4]);
+        Widget timeStringMin(&tool1, 90, 3, 330, 200, 0xFF, 0xFF, 0xFF, 2, (uint8_t*)new uint8_t[3]);
+        tool1.AddChild(&timeStringMonth);
+        tool1.AddChild(&timeStringDate);
+        tool1.AddChild(&timeStringHour);
+        tool1.AddChild(&timeStringMin);
+
         Window win1(&desktop, 114, 230, 350, 230, 0xFF, 0x00, 0x00, (uint8_t*)"win1");
         desktop.AddChild(&win1);
         Widget string1(&win1, 5, 25, 330, 200, 0xFF, 0xFF, 0xFF, 2, shell1.GetShellText());
         win1.AddChild(&string1);
-        Window win2(&desktop, 568,230,200,100, 0x00,0xFF,0x00,(uint8_t*)"win2");
+        Window win2(&desktop, 568,230,200,100, 0x00,0xAA,0x00,(uint8_t*)"win2");
         desktop.AddChild(&win2);
+
+        timeStringMonth.stringText[2] = '/';
+        timeStringHour.stringText[2] = ':';
     #endif
 
     while(1) {
+        
+    svga.Redraw();
         desktop.Draw(&svga);
+        
+        timeControl.ReadRtc();
+        timeStringMonth.stringText[0] = timeControl.month/10 + 48;
+        timeStringMonth.stringText[1] = timeControl.month%10 + 48;
+
+        timeStringDate.stringText[0] = timeControl.day/10 + 48;
+        timeStringDate.stringText[1] = timeControl.day%10 + 48;
+
+        timeStringHour.stringText[0] = timeControl.hour/10 + 48;
+        timeStringHour.stringText[1] = timeControl.hour%10 + 48;
+
+        timeStringMin.stringText[0] = timeControl.minute/10 + 48;
+        timeStringMin.stringText[1] = timeControl.minute%10 + 48;
     }
 }

@@ -6,9 +6,10 @@ using namespace myos::gui;
 
 
 Desktop::Desktop(common::uint32_t w, common::uint32_t h,
-                common::uint8_t r, common::uint8_t g, common::uint8_t b)
+                common::uint8_t r, common::uint8_t g, common::uint8_t b, common::SuperGraphicsContext* gc)
 :   CompositeWidget(0,0,0, w,h,r,g,b, 0, nullptr),
-    MouseEventHandler() {
+    MouseEventHandler(),
+    gc(gc) {
     MouseX = 512;
     MouseY = 384;
 }
@@ -16,7 +17,7 @@ Desktop::Desktop(common::uint32_t w, common::uint32_t h,
 Desktop::~Desktop() {
 }
 
-void Desktop::Draw(common::SuperGraphicsContext* gc) {
+void Desktop::Draw() {
     gc->Redraw();
     CompositeWidget::Draw(gc);
     

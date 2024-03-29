@@ -7,14 +7,15 @@ objects = obj/loader.o \
  		  obj/kernel.o \
 		  obj/gdt.o \
 		  obj/shell.o \
-		  obj/multitasking.o \
 		  obj/memorymanager.o \
 		  obj/syscalls.o \
 		  obj/hardwarecommunication/interrupts.o \
 		  obj/hardwarecommunication/interruptstubs.o \
 		  obj/hardwarecommunication/pci.o \
+		  obj/hardwarecommunication/multitasking.o \
 		  obj/hardwarecommunication/port.o \
 		  obj/hardwarecommunication/times.o \
+		  obj/hardwarecommunication/sound.o \
 		  obj/drivers/keyboard.o \
 		  obj/drivers/mouse.o \
 		  obj/drivers/vga.o \

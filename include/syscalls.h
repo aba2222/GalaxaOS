@@ -3,7 +3,7 @@
 
 #include "common/types.h"
 #include "hardwarecommunication/interrupts.h"
-#include "multitasking.h"
+#include "hardwarecommunication/multitasking.h"
 
 namespace myos {
     class SysCallHandler : public hardwarecommunication::InterruptHandler {

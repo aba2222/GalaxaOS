@@ -2,7 +2,7 @@
 #define __MYOS__HARDWARECOMMUNICATION__INTERRUPTS_H
 
 #include "common/types.h"
-#include "multitasking.h"
+#include "hardwarecommunication/multitasking.h"
 #include "hardwarecommunication/port.h"
 #include "gdt.h"
 
@@ -25,7 +25,7 @@ namespace myos {
         class InterruptManager {
             friend class InterruptHandler;
         public:
-            InterruptManager(myos::common::uint16_t hardwareInterruptOffset, GlobalDescriptorTable* gdt, myos::TaskManager* taskManager);
+            InterruptManager(myos::common::uint16_t hardwareInterruptOffset, GlobalDescriptorTable* gdt, TaskManager* taskManager);
             ~InterruptManager();
 
             myos::common::uint16_t HardwareInterruptOffset();
@@ -113,6 +113,8 @@ namespace myos {
             myos::hardwarecommunication::Port8BitSlow picSlaveCommand;
             myos::hardwarecommunication::Port8BitSlow picSlaveData;
         };
+
+        static InterruptManager* nowIntManagerM;
     }
 }
 

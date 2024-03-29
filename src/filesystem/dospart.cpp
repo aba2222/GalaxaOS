@@ -19,16 +19,14 @@ void PartitionManger::AddPartition(FatPartition* addpart) {
 }
 
 FatPartition* PartitionManger::GetPartitionList(uint8_t num) {
+    if(num < 1 && num > 4) {
+        return 0;
+    }
     printf("\n");
-    printfHex((partitionList[1]->partitionOffset >> 24) & 0xff);
-    printfHex((partitionList[1]->partitionOffset >> 16) & 0xff);
-    printfHex((partitionList[1]->partitionOffset >> 8) & 0xff);
-    printfHex((partitionList[1]->partitionOffset >> 0) & 0xff);
-    printf("\n");
-    printfHex((partitionList[2]->partitionOffset >> 24) & 0xff);
-    printfHex((partitionList[2]->partitionOffset >> 16) & 0xff);
-    printfHex((partitionList[2]->partitionOffset >> 8) & 0xff);
-    printfHex((partitionList[2]->partitionOffset >> 0) & 0xff);
+    printfHex((partitionList[num]->partitionOffset >> 24) & 0xff);
+    printfHex((partitionList[num]->partitionOffset >> 16) & 0xff);
+    printfHex((partitionList[num]->partitionOffset >> 8) & 0xff);
+    printfHex((partitionList[num]->partitionOffset >> 0) & 0xff);
     return partitionList[num];
 }
 

@@ -1,12 +1,13 @@
 #include "common/types.h"
 #include "gdt.h"
-#include "multitasking.h"
 #include "memorymanager.h"
 #include "syscalls.h"
 #include "shell.h"
 #include "hardwarecommunication/interrupts.h"
 #include "hardwarecommunication/pci.h"
+#include "hardwarecommunication/multitasking.h"
 #include "hardwarecommunication/times.h"
+#include "hardwarecommunication/sound.h"
 #include "drivers/driver.h"
 #include "drivers/keyboard.h"
 #include "drivers/mouse.h"
@@ -69,15 +70,6 @@ void printfHex(uint8_t key) {
     printf((const char*)foo);
 }
 
-//delete!
-const char* numToChar(uint8_t key) {
-    char* foo = (char*)(new uint8_t* [2]);
-    const char* hex = "0123456789ABCDEF";
-    foo[0] = hex[(key >> 4) & 0x0f];
-    foo[1] = hex[key & 0x0f];
-    return (const char*)foo;
-}
-
 class PrintKeyboardEventHandler : public KeyBoardEventHandler {
 public:
     void OnKeyDown(char c) {
@@ -130,6 +122,7 @@ void SysCallPrint(const char* str) {
 //more task
 void TaskA() {
     while (1) {
+        //shell1.ShellPrintf((const char*)"A");
         SysCallPrint((const char*)"A");
     }
 }
@@ -154,9 +147,9 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     GlobalDescriptorTable gdt;
 
     TaskManager taskmanager;
-    Task task1(&gdt, TaskA);
+    //Task task1(&gdt, TaskA);
     //Task task2(&gdt, TaskB);
-    taskmanager.AddTask(&task1);
+    //taskmanager.AddTask(&task1);
     //taskmanager.AddTask(&task2);
 
     printf("magicnumber: 0x");
@@ -201,17 +194,27 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     printf("\n-----init1-----\n");
 
     InterruptManager interrupts(0x20, &gdt, &taskmanager);
+    nowIntManagerM = &interrupts;
     SysCallHandler syscalls(&interrupts, 0x80);
 
+    DriverManger drvManger;
+
+    #ifdef GMODE1
+        VideoGraphicsArray vga;
+    #endif
+    #ifdef GMODE2
+        uint32_t pixelwidth = multiboot_structure->framebuffer_bpp / 8;
+        SuperVideoGraphicsArray svga((uint8_t*)multiboot_structure->framebuffer_addr, multiboot_structure->framebuffer_width, 
+                                      multiboot_structure->framebuffer_height, multiboot_structure->framebuffer_pitch,
+                                      multiboot_structure->framebuffer_bpp, pixelwidth);
+    #endif
     #ifdef GMODE1
         Desktop desktop(320,200, 0x00,0x00,0xA8);
     #endif
     #ifdef GMODE2
-        Desktop desktop(multiboot_structure->framebuffer_width, multiboot_structure->framebuffer_height, 0x87, 0xCE, 0xEB);
+        Desktop desktop(multiboot_structure->framebuffer_width, multiboot_structure->framebuffer_height, 0x87, 0xCE, 0xEB, &svga);
     #endif
 
-    DriverManger drvManger;
-    
     #ifdef GMODE1
         KeyBoardDriver keyboard(&interrupts, &desktop);
         MouseDriver mouse(&interrupts, &desktop);
@@ -233,20 +236,9 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     PCIController.SelectDrivers(&drvManger, &interrupts);
 
     Times timeControl(0x70, 0x71);
-
-    #ifdef GMODE1
-        VideoGraphicsArray vga;
-    #endif
-    #ifdef GMODE2
-        uint32_t pixelwidth = multiboot_structure->framebuffer_bpp / 8;
-        SuperVideoGraphicsArray svga((uint8_t*)multiboot_structure->framebuffer_addr, multiboot_structure->framebuffer_width, 
-                                      multiboot_structure->framebuffer_height, multiboot_structure->framebuffer_pitch,
-                                      multiboot_structure->framebuffer_bpp, pixelwidth);
-    #endif
+    Shell shell1;
 
     drvManger.ActivateAll(); 
-
-    Shell shell1;
 
     //amd_am79c973* eth0 = (amd_am79c973*)(drvManger.drivers[2]);
     //eth0->Send((uint8_t*)"Hello Network", 13);
@@ -279,6 +271,9 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     printf("\n");
 
     interrupts.Activate();
+
+    Sounds soundManager;
+    soundManager.play_sound(1000);
 
     printf("\n-----Init Done-----\n");
     
@@ -313,9 +308,7 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     #endif
 
     while(1) {
-        
-    svga.Redraw();
-        desktop.Draw(&svga);
+        desktop.Draw();
         
         timeControl.ReadRtc();
         timeStringMonth.stringText[0] = timeControl.month/10 + 48;

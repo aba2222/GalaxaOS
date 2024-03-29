@@ -159,7 +159,9 @@ uint32_t InterruptManager::DoHandleInterrupt(uint8_t interruptNumber, uint32_t e
     }
 
     if(interruptNumber == hardwareInterruptOffset) {
+        taskManager->LockScheduler();
         esp = (uint32_t)taskManager->Schedule((CPUState*) esp);
+        taskManager->UnLockScheduler();
     }
 
     if (hardwareInterruptOffset <= interruptNumber && interruptNumber < hardwareInterruptOffset + 16) {

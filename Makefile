@@ -44,9 +44,7 @@ install: mykernel.bin
 	sudo cp $< /boot/mykernel.bin
 
 mykernel.iso: mykernel.bin
-	mkdir iso
-	mkdir iso/boot
-	mkdir iso/boot/grub
+	mkdir -p iso/boot/grub
 	cp $< iso/boot/
 	echo 'set timeout=0' > iso/boot/grub/grub.cfg
 	echo 'set default=0' >> iso/boot/grub/grub.cfg
@@ -59,9 +57,10 @@ mykernel.iso: mykernel.bin
 	rm -rf iso
 
 run: mykernel.iso
-	(killall virtualbox && sleep 1) || true
-	virtualboxvm --startvm "myos" &
+	(killall qemu-system-i386 && sleep 1) || true
+	qemu-system-i386 -cdrom $< -boot d -m 512 &
 
 .PHONY: clean
 clean:
+	(killall qemu-system-i386 && sleep 1) || true
 	rm -rf mykernel.bin mykernel.iso obj

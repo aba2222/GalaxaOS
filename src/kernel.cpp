@@ -2,7 +2,6 @@
 #include "gdt.h"
 #include "memorymanager.h"
 #include "syscalls.h"
-#include "shell.h"
 #include "hardwarecommunication/interrupts.h"
 #include "hardwarecommunication/pci.h"
 #include "hardwarecommunication/multitasking.h"
@@ -239,7 +238,6 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     PCIController.SelectDrivers(&drvManger, &interrupts);
 
     Times timeControl(0x70, 0x71);
-    Shell shell1;
 
     drvManger.ActivateAll(); 
 
@@ -260,10 +258,7 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     DirectoriesFat32 part1Dirent[32] = {0};
     part1->GetFatFileList((DirectoriesFat32*)&part1Dirent);
     char* filename = part1->ReadFileName(part1Dirent[1]);
-    shell1.ShellPrintf((const char*)filename);
-    part1->ReadTxtFile(part1Dirent[1], &shell1);
-    shell1.ShellPrintf((const char*)"\n");
-
+    part1->ReadTxtFile(part1Dirent[1]);
     //AdvancedTechnologyAttachment ata1m(true, 0x170);
     //ata1m.Identify();
     //AdvancedTechnologyAttachment ata1s(false, 0x170);
@@ -293,12 +288,12 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
         StringText timeString(&tool1, 10, 3, 330, 200, 0xFF, 0xFF, 0xFF, "11/04 05:14");
         tool1.AddChild(&timeString);
 
-        Window win1(&desktop, 114, 230, 350, 230, 0xFF, 0x00, 0x00,"win1");
+        /*Window win1(&desktop, 114, 230, 350, 230, 0xFF, 0x00, 0x00,"win1");
         desktop.AddChild(&win1);
         Widget string1(&win1, 5, 25, 330, 200, 0xFF, 0xFF, 0xFF, 2, shell1.GetShellText());
         win1.AddChild(&string1);
         Window win2(&desktop, 568,230,200,100, 0x00,0xAA,0x00,"win2");
-        desktop.AddChild(&win2);
+        desktop.AddChild(&win2);*/
     #endif
 
     while(1) {

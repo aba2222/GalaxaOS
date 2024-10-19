@@ -3,6 +3,7 @@
 
 #include "gui/widget.h"
 #include "gui/window.h"
+#include "gui/stringtext.h"
 #include "drivers/mouse.h"
 #include "drivers/keyboard.h"
 
@@ -13,7 +14,7 @@ namespace myos {
             Desktop(common::uint32_t w, common::uint32_t h, common::uint8_t r,
                     common::uint8_t g, common::uint8_t b, common::SuperGraphicsContext* gc);
             ~Desktop();
-
+            
             void OnMouseDown(common::uint8_t button);
             void OnMouseUp(common::uint8_t button);
             void OnMouseMove(common::int8_t x, common::int8_t y);
@@ -22,12 +23,17 @@ namespace myos {
 
             void OnKeyDown(char);
             void OnKeyUp(char);
+            static common::String shellText;
+            
         protected:
             common::uint32_t MouseX;
             common::uint32_t MouseY;
+            StringText shellGfx;
 
             common::SuperGraphicsContext* gc;
         };
+
+        void printDesk(common::String str);
     }
 }
 

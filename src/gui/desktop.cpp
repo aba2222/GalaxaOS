@@ -4,24 +4,34 @@ using namespace myos;
 using namespace myos::common;
 using namespace myos::gui;
 
+String Desktop::shellText = " ";
+
+void myos::gui::printDesk(String str) {
+    Desktop::shellText = Desktop::shellText + str;
+}
 
 Desktop::Desktop(common::uint32_t w, common::uint32_t h,
                 common::uint8_t r, common::uint8_t g, common::uint8_t b, common::SuperGraphicsContext* gc)
 :   CompositeWidget(0,0,0, w,h,r,g,b, 0, nullptr),
     MouseEventHandler(),
-    gc(gc) {
+    KeyBoardEventHandler(),
+    gc(gc),
+    shellGfx(this,10,30,w,h,0x00,0x00,0x00,"Hello! shell." ) {
     MouseX = 512;
     MouseY = 384;
+    AddChild(&shellGfx);
 }
 
 Desktop::~Desktop() {
 }
 
 void Desktop::Draw() {
+    shellGfx.thisStringText = shellText;
+    printDesk("a");
     gc->Redraw();
     CompositeWidget::Draw(gc);
 
-   int cursorSize = 5;
+    int cursorSize = 5;
     int borderSize = 3;
 
     int drawX = (MouseX < cursorSize + borderSize) ? (cursorSize + borderSize) : 

@@ -25,7 +25,11 @@ namespace myos {
             void PutLine(int x0, int y0, int x1, int y1);
 
             void PutChar(common::uint8_t c, common::uint32_t cx, common::uint32_t cy, common::uint32_t fg, common::uint32_t bg);
-            void PutString(common::uint8_t* c, common::uint32_t cx, common::uint32_t cy, common::uint32_t fg, common::uint32_t bg, common::uint16_t w);
+            void PutString(const common::uint8_t* c, common::uint32_t cx, common::uint32_t cy, common::uint32_t fg, common::uint32_t bg, common::uint16_t w);
+            void PutString(const common::String c, common::uint32_t cx, common::uint32_t cy, common::uint32_t fg, common::uint32_t bg, common::uint16_t w);
+
+            common::uint32_t GetWidth() const;
+            common::uint32_t GetHeight() const;
 
             void Redraw();
         private:

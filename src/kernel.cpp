@@ -14,6 +14,7 @@
 #include "drivers/vga.h"
 #include "drivers/svga.h"
 #include "gui/desktop.h"
+#include "gui/stringtext.h"
 #include "drivers/amd_am79c973.h"
 #include "drivers/ata.h"
 #include "filesystem/dospart.h"
@@ -28,6 +29,8 @@ using namespace myos::hardwarecommunication;
 
 //#define GMODE1
 #define GMODE2
+
+SuperVideoGraphicsArray* svga;
 
 void printf(const char* str){
     static uint16_t* VideoMemory = (uint16_t*)0xb8000;
@@ -204,7 +207,7 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     #endif
     #ifdef GMODE2
         uint32_t pixelwidth = multiboot_structure->framebuffer_bpp / 8;
-        SuperVideoGraphicsArray svga((uint8_t*)multiboot_structure->framebuffer_addr, multiboot_structure->framebuffer_width, 
+        svga = new SuperVideoGraphicsArray((uint8_t*)multiboot_structure->framebuffer_addr, multiboot_structure->framebuffer_width, 
                                       multiboot_structure->framebuffer_height, multiboot_structure->framebuffer_pitch,
                                       multiboot_structure->framebuffer_bpp, pixelwidth);
     #endif
@@ -212,7 +215,7 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
         Desktop desktop(320,200, 0x00,0x00,0xA8);
     #endif
     #ifdef GMODE2
-        Desktop desktop(multiboot_structure->framebuffer_width, multiboot_structure->framebuffer_height, 0x87, 0xCE, 0xEB, &svga);
+        Desktop desktop(multiboot_structure->framebuffer_width, multiboot_structure->framebuffer_height, 0x87, 0xCE, 0xEB, svga);
     #endif
 
     #ifdef GMODE1
@@ -273,7 +276,7 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     interrupts.Activate();
 
     Sounds soundManager;
-    soundManager.play_sound(1000);
+    //soundManager.play_sound(10);
 
     printf("\n-----Init Done-----\n");
     
@@ -285,42 +288,35 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
         desktop.AddChild(&win2);
     #endif
     #ifdef GMODE2
-        CompositeWidget tool1(&desktop, 0, 0, multiboot_structure->framebuffer_width, 30, 128, 128, 128, 0, (uint8_t*)"tool");
+        CompositeWidget tool1(&desktop, 0, 0, multiboot_structure->framebuffer_width, 30, 128, 128, 128, 0,"tool");
         desktop.AddChild(&tool1);
-        Widget timeStringMonth(&tool1, 10, 3, 330, 200, 0xFF, 0xFF, 0xFF, 2, (uint8_t*)new uint8_t[4]);
-        Widget timeStringDate(&tool1, 35, 3, 330, 200, 0xFF, 0xFF, 0xFF, 2, (uint8_t*)new uint8_t[3]);
-        Widget timeStringHour(&tool1, 60, 3, 330, 200, 0xFF, 0xFF, 0xFF, 2, (uint8_t*)new uint8_t[4]);
-        Widget timeStringMin(&tool1, 90, 3, 330, 200, 0xFF, 0xFF, 0xFF, 2, (uint8_t*)new uint8_t[3]);
-        tool1.AddChild(&timeStringMonth);
-        tool1.AddChild(&timeStringDate);
-        tool1.AddChild(&timeStringHour);
-        tool1.AddChild(&timeStringMin);
+        StringText timeString(&tool1, 10, 3, 330, 200, 0xFF, 0xFF, 0xFF, "11/04 05:14");
+        tool1.AddChild(&timeString);
 
-        Window win1(&desktop, 114, 230, 350, 230, 0xFF, 0x00, 0x00, (uint8_t*)"win1");
+        Window win1(&desktop, 114, 230, 350, 230, 0xFF, 0x00, 0x00,"win1");
         desktop.AddChild(&win1);
         Widget string1(&win1, 5, 25, 330, 200, 0xFF, 0xFF, 0xFF, 2, shell1.GetShellText());
         win1.AddChild(&string1);
-        Window win2(&desktop, 568,230,200,100, 0x00,0xAA,0x00,(uint8_t*)"win2");
+        Window win2(&desktop, 568,230,200,100, 0x00,0xAA,0x00,"win2");
         desktop.AddChild(&win2);
-
-        timeStringMonth.stringText[2] = '/';
-        timeStringHour.stringText[2] = ':';
     #endif
 
     while(1) {
+        #ifdef GMODE2
         desktop.Draw();
         
         timeControl.ReadRtc();
-        timeStringMonth.stringText[0] = timeControl.month/10 + 48;
-        timeStringMonth.stringText[1] = timeControl.month%10 + 48;
+        timeString.stringText[0] = timeControl.month/10 + 48;
+        timeString.stringText[1] = timeControl.month%10 + 48;
 
-        timeStringDate.stringText[0] = timeControl.day/10 + 48;
-        timeStringDate.stringText[1] = timeControl.day%10 + 48;
+        timeString.stringText[3] = timeControl.day/10 + 48;
+        timeString.stringText[4] = timeControl.day%10 + 48;
 
-        timeStringHour.stringText[0] = timeControl.hour/10 + 48;
-        timeStringHour.stringText[1] = timeControl.hour%10 + 48;
+        timeString.stringText[6] = timeControl.hour/10 + 48;
+        timeString.stringText[7] = timeControl.hour%10 + 48;
 
-        timeStringMin.stringText[0] = timeControl.minute/10 + 48;
-        timeStringMin.stringText[1] = timeControl.minute%10 + 48;
+        timeString.stringText[9] = timeControl.minute/10 + 48;
+        timeString.stringText[10] = timeControl.minute%10 + 48;
+        #endif
     }
 }

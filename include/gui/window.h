@@ -10,7 +10,7 @@ namespace myos {
         public:
             Window(Widget* parent, common::int32_t x, common::int32_t y,
                     common::uint32_t w, common::uint32_t h, common::uint8_t r,
-                    common::uint8_t g, common::uint8_t b, common::uint8_t* stringText);
+                    common::uint8_t g, common::uint8_t b, common::String stringText);
             ~Window();
 
             void OnMouseDown(common::int32_t x, common::int32_t y, common::uint8_t button);

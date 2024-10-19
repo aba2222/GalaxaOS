@@ -4,7 +4,7 @@ using namespace myos::common;
 
 Shell::Shell() 
      : x(0) {
-    shellText = (uint8_t*)(new uint8_t* [80 * 25 * sizeof(uint8_t)]);
+    //shellText = (uint8_t*)(new uint8_t* [80 * 25 * sizeof(uint8_t)]);
     this->CleanText();
 }
 
@@ -20,24 +20,24 @@ void Shell::ShellPrintf(const char* str) {
         case '\0':
             break;
         default:
-            shellText[x] = str[i];
-            x++;
+            shellText[x] += str[i];
+            //x++;
             break;
         }
     }
-    shellText[x] = '\0';
+    //shellText[x] = '\0';
 }
 
 void Shell::CleanText() {
     //TODO:去掉了y会出问题
-    for(int y = 0; y < 25; y++) {
+   /*for(int y = 0; y < 25; y++) {
         for(x = 0; x < 80; x++) {
             shellText[80 * y + x] = ' ';
         }
     }
-    x = 0;
+    x = 0;*/
 }
 
-uint8_t* Shell::GetShellText() {
+String Shell::GetShellText() {
     return shellText;
 }

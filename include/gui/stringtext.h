@@ -12,7 +12,7 @@ namespace myos {
                 common::uint32_t w, common::uint32_t h, common::uint8_t r,
                 common::uint8_t g, common::uint8_t b, common::String stringText);
             void Draw(common::SuperGraphicsContext* gc);
-            common::uint8_t* stringText;
+            common::String stringText;
         };
     }
 }

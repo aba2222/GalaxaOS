@@ -41,19 +41,17 @@ bool TaskManager::AddTask(Task* task) {
         thisTcb = task;
         thisTcb->nextTask = task;
         thisTcb->headTask = task;
-        return true;
+    } else {
+        task->nextTask = thisTcb->headTask;
+        thisTcb->nextTask = task;
+        thisTcb = task;
     }
-
-    thisTcb->nextTask = task;
-    task->headTask = thisTcb->headTask;
-    task->nextTask = thisTcb->headTask;
-    thisTcb = task;
 
     return true;
 }
 
 CPUState* TaskManager::Schedule(CPUState* cpustate) {
-    if(thisTcb == nullptr) {
+    /*if(thisTcb == nullptr) {
         return cpustate;
     }
     if(nowTask == nullptr) {
@@ -68,7 +66,30 @@ CPUState* TaskManager::Schedule(CPUState* cpustate) {
     }
 
     nowTask = nowTask->nextTask;
-    return nowTask->cpustate;
+    return nowTask->cpustate;*/
+
+    if (thisTcb == nullptr) {
+        return cpustate;  // 没有任务可调度，返回当前CPU状态
+    }
+
+    if (nowTask != nullptr) {
+        nowTask->cpustate = cpustate;  // 保存当前任务状态
+    } else {
+        nowTask = thisTcb;  // 初始化当前任务为第一个任务
+    }
+
+    // 查找下一个可运行的任务
+    Task* startTask = nowTask;
+    do {
+        nowTask = nowTask->nextTask;  // 切换到下一个任务
+    } while (nowTask->taskState != 1 && nowTask != startTask);  // 找到可运行任务或遍历一轮
+
+    // 如果所有任务都阻塞，返回当前任务的状态
+    if (nowTask->taskState != 1) {
+        return cpustate;
+    }
+
+    return nowTask->cpustate;  // 返回新任务的CPU状态
 }
 
 void TaskManager::LockScheduler(void) {
@@ -88,7 +109,7 @@ void TaskManager::UnLockScheduler(void) {
             if(nowIntManagerM != nullptr) {
                 nowIntManagerM->Activate();
             }
-            else asm("cli");
+            else asm("sti");
         }
     #endif
 }
@@ -96,22 +117,22 @@ void TaskManager::UnLockScheduler(void) {
 void TaskManager::BlockTask(int reason) {
     LockScheduler();
     nowTask->taskState = reason;
-    //Schedule(nowTask->cpustate);
+    Schedule(nowTask->cpustate);
     UnLockScheduler();
 }
 
 //不可用
 void TaskManager::UnblockTask(Task* task) {
     LockScheduler();
-    if(nowTask == nullptr) { 
-        //TODO
-        //switch_to_task(task);
-        return;
+    
+    task->taskState = 1;
+
+    if (nowTask == nullptr) {
+        nowTask = task;
     } else {
-        //task->nextTask = nowTask->nextTask;
-        //nowTask->nextTask = task;
-        //nowTask = task;t
-        task->taskState = 1;
+        task->nextTask = nowTask->nextTask;
+        nowTask->nextTask = task;
     }
+
     UnLockScheduler();
 }

@@ -24,6 +24,7 @@ objects = obj/loader.o \
 		  obj/drivers/ata.o \
 		  obj/drivers/amd_am79c973.o \
 		  obj/gui/widget.o \
+		  obj/gui/stringtext.o \
 		  obj/gui/window.o \
 		  obj/gui/desktop.o \
 		  obj/filesystem/dospart.o\

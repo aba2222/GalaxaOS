@@ -85,6 +85,110 @@ namespace myos {
             uint16_t off_screen_mem_size;	// size of memory in the framebuffer but not being displayed on the screen
             uint8_t reserved1[206];
         } __attribute__ ((packed));
+
+        class String {
+        public:
+            // 默认构造函数
+            String() : data(0), length(0) {}
+
+            // 构造函数
+            String(const char* str) {
+                if (str) {
+                    length = 0;
+                    while (str[length] != '\0') {
+                        length++;
+                    }
+                    data = new char[length + 1]; // +1 是为了存储 '\0'
+                    for (size_t i = 0; i < length; i++) {
+                        data[i] = str[i];
+                    }
+                    data[length] = '\0'; // 添加字符串结束符
+                } else {
+                    data = 0;
+                    length = 0;
+                }
+            }
+
+            // 拷贝构造函数
+            String(const String& other) {
+                length = other.length;
+                if (length > 0) {
+                    data = new char[length + 1];
+                    for (size_t i = 0; i < length; i++) {
+                        data[i] = other.data[i];
+                    }
+                    data[length] = '\0';
+                } else {
+                    data = 0;
+                }
+            }
+
+            // 赋值操作符
+            String& operator=(const String& other) {
+                if (this != &other) {
+                    delete[] data; // 释放旧数据
+
+                    length = other.length;
+                    if (length > 0) {
+                        data = new char[length + 1];
+                        for (size_t i = 0; i < length; i++) {
+                            data[i] = other.data[i];
+                        }
+                        data[length] = '\0';
+                    } else {
+                        data = 0;
+                    }
+                }
+                return *this;
+            }
+
+            // 字符串拼接
+            String operator+(const String& other) const {
+                String result;
+                result.length = length + other.length;
+                result.data = new char[result.length + 1];
+                
+                // 复制当前字符串
+                for (size_t i = 0; i < length; i++) {
+                    result.data[i] = data[i];
+                }
+
+                // 复制其他字符串
+                for (size_t i = 0; i < other.length; i++) {
+                    result.data[length + i] = other.data[i];
+                }
+                
+                result.data[result.length] = '\0'; // 添加字符串结束符
+                return result;
+            }
+
+            // 获取字符串长度
+            size_t Length() const {
+                return length;
+            }
+
+            // 索引操作符
+            char& operator[](size_t index) {
+                return data[index];
+            }
+
+            const char& operator[](size_t index) const {
+                return data[index];
+            }
+
+            // 析构函数
+            ~String() {
+                delete[] data;
+            }
+
+            // 获取底层数据
+            const char* c_str() const {
+                return data ? data : "";
+            }
+        private:
+            char* data;     // 字符串数据
+            size_t length;  // 字符串长度
+        };
     }
 }
 

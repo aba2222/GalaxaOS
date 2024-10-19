@@ -20,15 +20,33 @@ Desktop::~Desktop() {
 void Desktop::Draw() {
     gc->Redraw();
     CompositeWidget::Draw(gc);
+
+   int cursorSize = 5;
+    int borderSize = 3;
+
+    int drawX = (MouseX < cursorSize + borderSize) ? (cursorSize + borderSize) : 
+                (MouseX > w - (cursorSize + borderSize)) ? (w - (cursorSize + borderSize)) : MouseX;
+    int drawY = (MouseY < cursorSize + borderSize) ? (cursorSize + borderSize) : 
+                (MouseY > h - (cursorSize + borderSize)) ? (h - (cursorSize + borderSize)) : MouseY;
+
+    for (int i = -cursorSize - borderSize; i <= cursorSize + borderSize; i++) {
+        gc->PutPixel(drawX + i, drawY, 0x00, 0x00, 0x00);
+        gc->PutPixel(drawX, drawY + i, 0x00, 0x00, 0x00);
+    }
+    for (int i = -cursorSize; i <= cursorSize; i++) {
+        gc->PutPixel(drawX + i, drawY, 0xFF, 0xFF, 0xFF);
+        gc->PutPixel(drawX, drawY + i, 0xFF, 0xFF, 0xFF);
+    }
     
-    for(int i = 0; i < 4; i++)
-    {
-        gc -> PutPixel(MouseX-i, MouseY, 0xFF, 0xFF, 0xFF);
-        gc -> PutPixel(MouseX+i, MouseY, 0xFF, 0xFF, 0xFF);
-        gc -> PutPixel(MouseX, MouseY-i, 0xFF, 0xFF, 0xFF);
-        gc -> PutPixel(MouseX, MouseY+i, 0xFF, 0xFF, 0xFF);
+    for (int y = -2; y <= 2; y++) {
+        for (int x = -2; x <= 2; x++) {
+            if (x * x + y * y <= 4) {
+                gc->PutPixel(drawX + x, drawY + y, 0xFF, 0xFF, 0xFF); // 圆形部分
+            }
+        }
     }
 }
+
             
 void Desktop::OnMouseDown(myos::common::uint8_t button) {
     CompositeWidget::OnMouseDown(MouseX, MouseY, button);

@@ -13,5 +13,5 @@ void StringText::Draw(SuperGraphicsContext *gc) {
     int X=0;
     int Y=0;
     ModelToScreen(X, Y);
-    gc->PutString(this->stringText, X, Y, 0, (128 << 24) + (128 << 16) + (128 << 8), this->w);
+    gc->PutString(Widget::stringText, X, Y, 0, (r << 24) + (g << 16) + (b << 8), this->w);
 }

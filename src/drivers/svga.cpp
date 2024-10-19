@@ -204,7 +204,8 @@ void SuperVideoGraphicsArray::PutChar(
         //mask=1<<(font->width-1);
         /* display a row */
         for(x=0;x < font->width;x++){
-            *((uint32_t*)(BackBuffer + line - 1)) = glyph[x/8] & (0x80 >> (x & 7)) ? fg : bg;
+            //*((uint32_t*)(BackBuffer + line - 1)) = glyph[x/8] & (0x80 >> (x & 7)) ? fg : bg;
+            if(glyph[x/8] & (0x80 >> (x & 7))) {*((uint32_t*)(BackBuffer + line - 1)) = fg;}
             //*((uint32_t*)(BackBuffer + line - 1)) = fg;//???????
             /* adjust to the next pixel */
             //mask >>= 1;
@@ -219,7 +220,7 @@ void SuperVideoGraphicsArray::PutChar(
     }
 }
 
-void SuperVideoGraphicsArray::PutString(common::uint8_t* c, common::uint32_t cx, common::uint32_t cy, 
+void SuperVideoGraphicsArray::PutString(const common::uint8_t* c, common::uint32_t cx, common::uint32_t cy, 
                                         common::uint32_t fg, common::uint32_t bg, common::uint16_t w) {
     int ax = cx;
     //int ay = cy;
@@ -237,4 +238,31 @@ void SuperVideoGraphicsArray::PutString(common::uint8_t* c, common::uint32_t cx,
 
         cx += 8 + 1;
     }
+}
+
+void SuperVideoGraphicsArray::PutString(const common::String c, common::uint32_t cx, common::uint32_t cy, 
+                                        common::uint32_t fg, common::uint32_t bg, common::uint16_t w) {
+    int ax = cx;
+    //int ay = cy;
+    for(int i = 0;(i <= 65535) && (c[i] != '\0'); i++) {
+        if(c[i] == '\n') {
+            cy += 26 + 1;
+            cx = ax;
+            continue;
+        }
+        if(cx - ax >= w) {
+            cy += 18;
+            cx = ax;
+        }
+        PutChar(c[i], cx, cy, fg, bg);
+
+        cx += 8 + 1;
+    }
+}
+
+uint32_t SuperVideoGraphicsArray::GetWidth() const {
+    return width;
+}
+uint32_t SuperVideoGraphicsArray::GetHeight() const {
+    return height;
 }

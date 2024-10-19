@@ -11,10 +11,10 @@ namespace myos {
         ~Shell();
 
         void ShellPrintf(const char* str);        
-        common::uint8_t* GetShellText();
+        common::String GetShellText();
         void CleanText();       
     protected:
-        common::uint8_t* shellText;
+        common::String shellText;
         common::uint8_t x;
     };
 }

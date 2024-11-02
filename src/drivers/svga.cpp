@@ -251,7 +251,7 @@ void SuperVideoGraphicsArray::PutString(const common::String c, common::uint32_t
             continue;
         }
         if(cx - ax >= w) {
-            cy += 18;
+            cy += 26 + 1;
             cx = ax;
         }
         PutChar(c[i], cx, cy, fg, bg);

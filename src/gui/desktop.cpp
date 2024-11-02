@@ -6,8 +6,14 @@ using namespace myos::gui;
 
 String Desktop::shellText = " ";
 
-void myos::gui::printDesk(String str) {
+void printDesk(String str) {
     Desktop::shellText = Desktop::shellText + str;
+}
+
+void printDesk(char str) {
+    String stri = " ";
+    stri[0] = str;
+    Desktop::shellText = Desktop::shellText + stri;
 }
 
 Desktop::Desktop(common::uint32_t w, common::uint32_t h,
@@ -20,6 +26,7 @@ Desktop::Desktop(common::uint32_t w, common::uint32_t h,
     MouseX = 512;
     MouseY = 384;
     AddChild(&shellGfx);
+    printDesk("Desk init done.");
 }
 
 Desktop::~Desktop() {
@@ -27,7 +34,6 @@ Desktop::~Desktop() {
 
 void Desktop::Draw() {
     shellGfx.thisStringText = shellText;
-    printDesk("a");
     gc->Redraw();
     CompositeWidget::Draw(gc);
 
@@ -83,6 +89,7 @@ void Desktop::OnMouseMove(int8_t x, int8_t y) {
 
 void Desktop::OnKeyDown(char str) {
     //CompositeWidget::children[0]->OnKeyDown(str);
+    printDesk(str);
     CompositeWidget::OnKeyDown(str);
 }
 

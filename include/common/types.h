@@ -123,42 +123,63 @@ namespace myos {
                 }
             }
 
+            String(String&& other) noexcept {
+                data = other.data;
+                length = other.length;
+
+                other.data = nullptr;
+                other.length = 0;
+            }
+
             // 赋值操作符
             String& operator=(const String& other) {
-                if (this != &other) {
-                    delete[] data; // 释放旧数据
+                if (this == &other) return *this; // 避免自赋值
 
+                // 使用临时对象处理分配，防止部分失败造成内存泄漏
+                char* newData = new char[other.length + 1];
+                for (size_t i = 0; i < other.length; ++i) {
+                    newData[i] = other.data[i];
+                }
+                newData[other.length] = '\0';
+
+                delete[] data;  // 释放旧的data
+                data = newData;
+                length = other.length;
+                return *this;
+            }
+
+            String& operator=(String&& other) noexcept {
+                if (this != &other) {
+                    delete[] data;
+
+                    data = other.data;
                     length = other.length;
-                    if (length > 0) {
-                        data = new char[length + 1];
-                        for (size_t i = 0; i < length; i++) {
-                            data[i] = other.data[i];
-                        }
-                        data[length] = '\0';
-                    } else {
-                        data = 0;
-                    }
+
+                    other.data = nullptr;
+                    other.length = 0;
                 }
                 return *this;
             }
 
-            // 字符串拼接
             String operator+(const String& other) const {
                 String result;
-                result.length = length + other.length;
-                result.data = new char[result.length + 1];
-                
+                size_t newLength = length + other.length;
+                char* newData = new char[newLength + 1];
+
                 // 复制当前字符串
-                for (size_t i = 0; i < length; i++) {
-                    result.data[i] = data[i];
+                for (size_t i = 0; i < length; ++i) {
+                    newData[i] = data[i];
                 }
 
                 // 复制其他字符串
-                for (size_t i = 0; i < other.length; i++) {
-                    result.data[length + i] = other.data[i];
+                for (size_t i = 0; i < other.length; ++i) {
+                    newData[length + i] = other.data[i];
                 }
-                
-                result.data[result.length] = '\0'; // 添加字符串结束符
+                newData[newLength] = '\0';
+
+                result.data = newData;
+                result.length = newLength;
+
                 return result;
             }
 
@@ -178,8 +199,11 @@ namespace myos {
 
             // 析构函数
             ~String() {
-                delete[] data;
+                if (data) {
+                    delete[] data;
+                }
             }
+
 
             // 获取底层数据
             const char* c_str() const {

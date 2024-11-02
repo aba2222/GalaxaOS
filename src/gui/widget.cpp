@@ -3,6 +3,7 @@
 using namespace myos::common;
 using namespace myos::gui;
 
+void printDesk(String); 
 
 Widget::Widget(Widget* parent, int32_t x, int32_t y,
         uint32_t w, uint32_t h, uint8_t r,
@@ -83,14 +84,8 @@ CompositeWidget::CompositeWidget(Widget* parent, int32_t x, int32_t y,
               focussedChild(0),
               numChildren(0) {
 }
-CompositeWidget::~CompositeWidget() {}
 
-void CompositeWidget::GetFocus(Widget* widget) {
-    this->focussedChild = widget;
-    if(parent != 0) {
-      parent->GetFocus(this);
-    }
-}
+CompositeWidget::~CompositeWidget() {}
 
 bool CompositeWidget::AddChild(Widget* child) {
     if(numChildren >= 100)
@@ -108,18 +103,28 @@ void CompositeWidget::Draw(SuperGraphicsContext* gc) {
     }
 }
 
+void CompositeWidget::GetFocus(Widget* widget) {
+    if (!widget) return; // 检查空指针
+    this->focussedChild = widget;
+    if (parent != 0) {
+        parent->GetFocus(this);
+    }
+}
+
 void CompositeWidget::OnMouseDown(int32_t x, int32_t y, common::uint8_t button) {
-    for(int i = 0; i < numChildren; ++i) {
+    for(int i = numChildren - 1; i >= 0; i--) {
         if(children[i]->ContainsCoordinate(x - this->x, y - this->y)) {
             children[i]->OnMouseDown(x - this->x, y - this->y, button);
             this->focussedChild = children[i];
+            
+            printDesk("Mouse clicked.");
             break;
         }
     }
 }
 
 void CompositeWidget::OnMouseUp(int32_t x, int32_t y, common::uint8_t button) {
-    for(int i = 0; i < numChildren; ++i) {
+    for(int i = 0; i < numChildren; i++) {
         //if(children[i]->ContainsCoordinate(x - this->x, y - this->y)) {
             children[i]->OnMouseUp(x - this->x, y - this->y, button);
             //break;
@@ -129,23 +134,20 @@ void CompositeWidget::OnMouseUp(int32_t x, int32_t y, common::uint8_t button) {
 
 void CompositeWidget::OnMouseMove(int32_t ox, int32_t oy, int32_t nx, int32_t ny) {
     int firstchild = -1;
-    for(int i = 0; i < numChildren; ++i) {
-        if(children[i]->ContainsCoordinate(ox - this->x, oy - this->y)) {
+    for (int i = 0; i < numChildren; ++i) {
+        if (children[i]->ContainsCoordinate(ox - this->x, oy - this->y)) {
             children[i]->OnMouseMove(ox - this->x, oy - this->y, nx - this->x, ny - this->y);
             firstchild = i;
             break;
         }
     }
 
-    //why???
-    for(int i = 0; i < numChildren; ++i) {
-        if(children[i]->ContainsCoordinate(nx - this->x, ny - this->y)) {
-            if(firstchild != i) {
-                children[i]->OnMouseMove(ox - this->x, oy - this->y, nx - this->x, ny - this->y);
-            }
+    for (int i = 0; i < numChildren; ++i) {
+        if (children[i]->ContainsCoordinate(nx - this->x, ny - this->y) && i != firstchild) {
+            children[i]->OnMouseMove(ox - this->x, oy - this->y, nx - this->x, ny - this->y);
             break;
         }
-    }     
+    }
 }
 
 void CompositeWidget::OnKeyDown(char str) {

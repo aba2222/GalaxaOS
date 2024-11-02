@@ -288,12 +288,10 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
         StringText timeString(&tool1, 10, 3, 330, 200, 0xFF, 0xFF, 0xFF, "11/04 05:14");
         tool1.AddChild(&timeString);
 
-        /*Window win1(&desktop, 114, 230, 350, 230, 0xFF, 0x00, 0x00,"win1");
+        Window win1(&desktop, 114, 230, 350, 230, 0xFF, 0x00, 0x00,"win1");
         desktop.AddChild(&win1);
-        Widget string1(&win1, 5, 25, 330, 200, 0xFF, 0xFF, 0xFF, 2, shell1.GetShellText());
-        win1.AddChild(&string1);
         Window win2(&desktop, 568,230,200,100, 0x00,0xAA,0x00,"win2");
-        desktop.AddChild(&win2);*/
+        desktop.AddChild(&win2);
     #endif
 
     while(1) {
@@ -301,17 +299,17 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
         desktop.Draw();
         
         timeControl.ReadRtc();
-        timeString.stringText[0] = timeControl.month/10 + 48;
-        timeString.stringText[1] = timeControl.month%10 + 48;
+        timeString.thisStringText[0] = timeControl.month/10 + 48;
+        timeString.thisStringText[1] = timeControl.month%10 + 48;
 
-        timeString.stringText[3] = timeControl.day/10 + 48;
-        timeString.stringText[4] = timeControl.day%10 + 48;
+        timeString.thisStringText[3] = timeControl.day/10 + 48;
+        timeString.thisStringText[4] = timeControl.day%10 + 48;
 
-        timeString.stringText[6] = timeControl.hour/10 + 48;
-        timeString.stringText[7] = timeControl.hour%10 + 48;
+        timeString.thisStringText[6] = timeControl.hour/10 + 48;
+        timeString.thisStringText[7] = timeControl.hour%10 + 48;
 
-        timeString.stringText[9] = timeControl.minute/10 + 48;
-        timeString.stringText[10] = timeControl.minute%10 + 48;
+        timeString.thisStringText[9] = timeControl.minute/10 + 48;
+        timeString.thisStringText[10] = timeControl.minute%10 + 48;
         #endif
     }
 }

@@ -52,6 +52,7 @@ bool PeripheralComponentInterconnectController::DeviceHasFunctions(uint8_t bus, 
 
 void printf(const char*);
 void printfHex(uint8_t);
+void printDesk(common::String);
 
 void PeripheralComponentInterconnectController::SelectDrivers(DriverManger* driverManger, InterruptManager* interrupts) {
     for(uint16_t bus = 0; bus < 256; bus++) {

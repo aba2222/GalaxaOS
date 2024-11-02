@@ -32,8 +32,6 @@ namespace myos {
 
             common::SuperGraphicsContext* gc;
         };
-
-        void printDesk(common::String str);
     }
 }
 

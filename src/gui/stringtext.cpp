@@ -6,7 +6,7 @@ using namespace myos::common;
 
 StringText::StringText(Widget *parent, int32_t x, int32_t y, uint32_t w, uint32_t h, 
                                     uint8_t r, uint8_t g, uint8_t b, String* stringText)
-        : Widget(parent, x,y,w,h, r,g,b, 114, "1"),
+        : Widget(parent, x,y,w,h, r,g,b, 114, stringText),
           thisStringText(stringText) {
 }
 

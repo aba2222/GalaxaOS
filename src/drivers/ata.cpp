@@ -4,8 +4,7 @@ using namespace myos;
 using namespace myos::common;
 using namespace myos::drivers;
 
-void printf(const char*);
-void printfHex(uint8_t);
+void printf(const char*, ...);
 
 AdvancedTechnologyAttachment::AdvancedTechnologyAttachment(bool master, common::uint16_t portBase)
                             :   dataPort(portBase),

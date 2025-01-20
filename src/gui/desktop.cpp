@@ -4,11 +4,10 @@ using namespace myos;
 using namespace myos::common;
 using namespace myos::gui;
 
-void printDesk(String);
-void printDesk(char);
+void printf(const char*, ...);
 
 Desktop::Desktop(uint32_t w, uint32_t h, uint8_t r, uint8_t g, uint8_t b, SuperGraphicsContext* gc, String* shellText)
-:   CompositeWidget(0,0,0, w,h,r,g,b, 0, nullptr),
+:   CompositeWidget(0,0,0, w,h,r,g,b, 0, shellText),
     MouseEventHandler(),
     KeyBoardEventHandler(),
     gc(gc),
@@ -16,7 +15,7 @@ Desktop::Desktop(uint32_t w, uint32_t h, uint8_t r, uint8_t g, uint8_t b, SuperG
     MouseX = w / 2;
     MouseY = h / 2;
     AddChild(&shellGfx);
-    printDesk("Desk init done.");
+    printf("Desk init done.");
 }
 
 Desktop::~Desktop() {
@@ -78,7 +77,7 @@ void Desktop::OnMouseMove(int8_t x, int8_t y) {
 
 void Desktop::OnKeyDown(char str) {
     //CompositeWidget::children[0]->OnKeyDown(str);
-    printDesk(str);
+    printf("%c", str);
     CompositeWidget::OnKeyDown(str);
 }
 

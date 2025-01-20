@@ -6,10 +6,10 @@ using namespace myos::gui;
 
 Window::Window(Widget* parent,
             int32_t x, int32_t y, uint32_t w, uint32_t h,
-            uint8_t r, uint8_t g, uint8_t b, String stringText)
+            uint8_t r, uint8_t g, uint8_t b, String* stringText)
 : CompositeWidget(parent, x,y,w,h, r,g,b, 1, stringText) {
     Dragging = false;
-    StringText* toolTab = new StringText(this,2,0,w,h,128,128,128,&stringText);
+    StringText* toolTab = new StringText(this,2,0,w,h,128,128,128,stringText);
     this->AddChild(toolTab);
 }
 

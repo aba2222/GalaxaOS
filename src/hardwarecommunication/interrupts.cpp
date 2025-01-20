@@ -4,8 +4,7 @@ using namespace myos;
 using namespace myos::common;
 using namespace myos::hardwarecommunication;
 
-void printf(const char*);
-void printfHex(uint8_t);
+void printf(const char*, ...);
 
 InterruptHandler::InterruptHandler(uint8_t interruptNumber, InterruptManager* interruptManager) {
     this->interruptNumber = interruptNumber;
@@ -154,8 +153,7 @@ uint32_t InterruptManager::DoHandleInterrupt(uint8_t interruptNumber, uint32_t e
     if (handlers[interruptNumber] != 0) {
         esp = handlers[interruptNumber]->HandleInterrupt(esp);
     }else if (interruptNumber != hardwareInterruptOffset) {
-        printf("UNHADLED INTERRUPT 0X");
-        printfHex(interruptNumber);
+        printf("UNHADLED INTERRUPT %d\n", interruptNumber);
     }
 
     if(interruptNumber == hardwareInterruptOffset) {

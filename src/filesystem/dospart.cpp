@@ -4,8 +4,7 @@ using namespace myos::common;
 using namespace myos::drivers;
 using namespace myos::filesystem;
 
-void printf(const char*);
-void printfHex(uint8_t);
+void printf(const char*, ...);
 
 PartitionManger::PartitionManger()
     : numParts(1) {
@@ -23,27 +22,24 @@ FatPartition* PartitionManger::GetPartitionList(uint8_t num) {
         return 0;
     }
     printf("\n");
-    printfHex((partitionList[num]->partitionOffset >> 24) & 0xff);
-    printfHex((partitionList[num]->partitionOffset >> 16) & 0xff);
-    printfHex((partitionList[num]->partitionOffset >> 8) & 0xff);
-    printfHex((partitionList[num]->partitionOffset >> 0) & 0xff);
+    printf("%d", partitionList[num]->partitionOffset);
     return partitionList[num];
 }
 
 void DOSPartitonTable::ReadPartitionTable(AdvancedTechnologyAttachment* hd, PartitionManger* pm) {
     MasterBootRecord mbr;
-    printf((const char*)"MBR:");
+    printf("MBR:");
     hd->Read28(0, (uint8_t*)&mbr, sizeof(MasterBootRecord));
 
     //for(int i = 446 + 16; i < 446 + 16 * 2; i++) {
     //    printfHex(((uint8_t*)&mbr)[i]);
-    //    printf((const char*)" ");
+    //    printf(" ");
     //}
-    //printf((const char*)" ");
+    //printf(" ");
     //return;
 
     if(mbr.magicnumber != 0xaa55) {
-        printf((const char*)"ill MBR");
+        printf("ill MBR");
         return;
     }
 
@@ -52,20 +48,19 @@ void DOSPartitonTable::ReadPartitionTable(AdvancedTechnologyAttachment* hd, Part
             continue;
         }
 
-        printf((const char*)" Partition");
-        printfHex(i & 0xff);
+        printf(" Partition %d", (i & 0xff));
 
         if (mbr.primaryPartition[i].bootTable == 0x80) {
-            printf((const char*)" bootable. Type ");
+            printf(" bootable. Type ");
         } else {
-            printf((const char*)" not bootable. Type ");
+            printf(" not bootable. Type ");
         }
 
-        printfHex(mbr.primaryPartition[i].systemID);
-        printf((const char*)" ");
+        printf("%d", mbr.primaryPartition[i].systemID);
+        printf(" ");
         FatPartition* partitionA = new FatPartition(hd, mbr.primaryPartition[i].startLba);
         pm->AddPartition(partitionA);
-        printf((const char*)"\n");
+        printf("\n");
     }
     return;
 }

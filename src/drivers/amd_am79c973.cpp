@@ -5,7 +5,7 @@ using namespace myos::drivers;
 using namespace myos::common;
 using namespace myos;
 
-void printfHex(uint8_t);
+void printf(const char*, ...);
 
 amd_am79c973::amd_am79c973(PeripheralComponentInterconnectDeviceDescriptor* dev, InterruptManager* interrupts)
             :Driver(),
@@ -100,8 +100,6 @@ int amd_am79c973::Reset() {
     return 10;
 }
 
-void printf(const char*);
-
 uint32_t amd_am79c973::HandleInterrupt(uint32_t esp) {
     printf("INTERRUPT FROM AMD am79c973\n");
 
@@ -160,8 +158,7 @@ void amd_am79c973::Receive() {
             uint8_t* buffer = (uint8_t*)(recvBufferDescr[currentRecvBuffer].address);
 
             for(int i = 0; i < size; i++) {
-                printfHex(buffer[i]);
-                printf(" ");
+                printf("%d ", buffer[i]);
             }
         }
 

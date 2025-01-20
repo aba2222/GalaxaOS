@@ -4,7 +4,7 @@ using namespace myos;
 using namespace myos::common;
 using namespace myos::hardwarecommunication;
 
-void printf(const char*);
+void printf(const char*, ...);
 
 SysCallHandler::SysCallHandler(InterruptManager* manger, uint8_t interruptNumber)
             : InterruptHandler(interruptNumber + manger->HardwareInterruptOffset(), manger) {}

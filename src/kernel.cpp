@@ -29,56 +29,60 @@ using namespace myos::hardwarecommunication;
 //#define GMODE1
 #define GMODE2
 
-static String shellText = " ";
-void printDesk(String str) {
-    shellText = shellText + str;
-}
+static String shellText = "";
 
-void printDesk(char str) {
-    String stri = " ";
-    stri[0] = str;
-    shellText = shellText + stri;
-}
+void printf(const char* format, ...) {
+    char buffer[256];
+    int i = 0, j = 0;
+    int* args = (int*)&format + 1;
 
-void printf(const char* str){
-    static uint16_t* VideoMemory = (uint16_t*)0xb8000;
-
-    static uint8_t x = 0, y = 0;
-    for(int i = 0; str[i]; i++){
-        switch(str[i]) {
-        case '\n':
-            y++;
-            x = 0;
-            break;
-        default:   
-            VideoMemory[80 * y + x] = (VideoMemory[80 * y + x] & 0xFF00) | str[i];
-            x++;
-            break;
-        }
-
-
-        if(x >= 80) {
-            x=0;
-            y++;
-        }
-
-        if (y >=25) {
-            for (y = 0; y < 25; y++) {
-                for(x = 0; x < 80;x++) {
-                    VideoMemory[80 * y + x] = (VideoMemory[80 * y + x] & 0xFF00) | ' ';
+    while (format[i]) {
+        if (format[i] == '%' && format[i + 1]) {
+            ++i;
+            switch (format[i]) {
+                case 'c': {
+                    buffer[j++] = (char)args[0];
+                    args++;
+                    break;
                 }
+                case 's': {
+                    const char* s = (const char*)args[0];
+                    args++;
+                    while (*s) {
+                        buffer[j++] = *s++;
+                    }
+                    break;
+                }
+                case 'd': {
+                    int d = args[0];
+                    args++;
+                    char numStr[10];
+                    int k = 0;
+                    if (d < 0) {
+                        buffer[j++] = '-';
+                        d = -d;
+                    }
+                    do {
+                        numStr[k++] = (d % 10) + '0';
+                        d /= 10;
+                    } while (d);
+                    while (k > 0) {
+                        buffer[j++] = numStr[--k];
+                    }
+                    break;
+                }
+                default:
+                    buffer[j++] = format[i];
+                    break;
             }
-            x = 0, y = 0;
+        } else {
+            buffer[j++] = format[i];
         }
+        ++i;
     }
-}
+    buffer[j] = '\0';
 
-void printfHex(uint8_t key) {
-    char* foo = (char*)"00";
-    const char* hex = "0123456789ABCDEF";
-    foo[0] = hex[(key >> 4) & 0x0f];
-    foo[1] = hex[key & 0x0f];
-    printf((const char*)foo);
+    shellText = shellText + buffer;
 }
 
 class PrintKeyboardEventHandler : public KeyBoardEventHandler {
@@ -163,44 +167,17 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     //taskmanager.AddTask(&task1);
     //taskmanager.AddTask(&task2);
 
-    printf("magicnumber: 0x");
-    printfHex((magicnumber >> 24) & 0xff);
-    printfHex((magicnumber >> 16) & 0xff);
-    printfHex((magicnumber >> 8) & 0xff);
-    printfHex((magicnumber >> 0) & 0xff);
-    printf("   ");
-
-    printf("vbe_mode: 0x");
-    printfHex(((multiboot_structure->vbe_mode) >> 24) & 0xff);
-    printfHex(((multiboot_structure->vbe_mode) >> 16) & 0xff);
-    printfHex(((multiboot_structure->vbe_mode) >> 8) & 0xff);
-    printfHex(((multiboot_structure->vbe_mode) >> 0) & 0xff);
-    printf(" ");
-
-    printf("vbe_mode_info->width: 0x");
-    printfHex(((multiboot_structure->vbe_mode_info) >> 24) & 0xff);
-    printfHex(((multiboot_structure->vbe_mode_info) >> 16) & 0xff);
-    printfHex(((multiboot_structure->vbe_mode_info) >> 8) & 0xff);
-    printfHex(((multiboot_structure->vbe_mode_info) >> 0) & 0xff);
-    printf("\n");
-
     //mmanager
     size_t heap = 10 * 1024 * 1024;
     uint32_t* memupper = (uint32_t*)((size_t)multiboot_structure + 8);
-    printf("memupper: 0x");
-    printfHex(((*memupper) >> 24) & 0xff);
-    printfHex(((*memupper) >> 16) & 0xff);
-    printfHex(((*memupper) >> 8) & 0xff);
-    printfHex(((*memupper) >> 0) & 0xff);
-    printf("   ");
 
     MemoryManager memoryManager(heap, (*memupper) * 1024 - heap - 10 * 1024);
 
-    printf("heap: 0x");
-    printfHex((heap >> 24) & 0xff);
-    printfHex((heap >> 16) & 0xff);
-    printfHex((heap >> 8) & 0xff);
-    printfHex((heap >> 0) & 0xff);
+    printf("magicnumber: %d ", magicnumber);
+    printf("vbe_mode: %d ", multiboot_structure->vbe_mode);
+    printf("vbe_mode_info->width: %d\n", multiboot_structure->vbe_mode_info);
+    printf("memupper: %d ", *memupper);
+    printf("heap: %d", heap);
 
     printf("\n-----init1-----\n");
 
@@ -293,15 +270,18 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
         desktop.AddChild(&win2);
     #endif
     #ifdef GMODE2
-        CompositeWidget tool1(&desktop, 0, 0, multiboot_structure->framebuffer_width, 30, 128, 128, 128, 0,"tool");
+        String toolName1 = "tool";
+        CompositeWidget tool1(&desktop, 0, 0, multiboot_structure->framebuffer_width, 30, 128, 128, 128, 0, &toolName1);
         desktop.AddChild(&tool1);
         String timeString = "xx/xx xx:xx:xx";
         StringText timeStringText(&tool1, 10, 3, 330, 200, 0xFF, 0xFF, 0xFF, &timeString);
         tool1.AddChild(&timeStringText);
 
-        Window win1(&desktop, 114, 230, 350, 230, 0xFF, 0x00, 0x00,"win1");
+        String windowsName1 = "Window 1";
+        Window win1(&desktop, 114, 230, 350, 230, 0xFF, 0x00, 0x00, &windowsName1);
         desktop.AddChild(&win1);
-        Window win2(&desktop, 568,230,200,100, 0x00,0xAA,0x00,"win2");
+        String windowsName2 = "Window 2";
+        Window win2(&desktop, 568, 230, 200, 100, 0x00, 0xAA, 0x00, &windowsName2);
         desktop.AddChild(&win2);
     #endif
 

@@ -50,9 +50,7 @@ bool PeripheralComponentInterconnectController::DeviceHasFunctions(uint8_t bus, 
     return Read(bus, device, 0, 0x0e) & (1 << 7);
 }
 
-void printf(const char*);
-void printfHex(uint8_t);
-void printDesk(common::String);
+void printf(const char*, ...);
 
 void PeripheralComponentInterconnectController::SelectDrivers(DriverManger* driverManger, InterruptManager* interrupts) {
     for(uint16_t bus = 0; bus < 256; bus++) {
@@ -62,22 +60,15 @@ void PeripheralComponentInterconnectController::SelectDrivers(DriverManger* driv
                 PeripheralComponentInterconnectDeviceDescriptor dev = GetDeviceDescriptor(bus, device, function);
                 if(dev.vendor_id == 0 || dev.vendor_id == 0xffff) break; //break or conitune?
 
-                printf("PCI BUS ");
-                printfHex(bus & 0xff);
+                printf("PCI BUS %d", (bus & 0xff));
                 
-                printf(", DEVICE ");
-                printfHex(device);
+                printf(", DEVICE %d", device);
 
-                printf(", FUNCTION ");
-                printfHex(function);
+                printf(", FUNCTION %d", function);
 
-                printf(" = VENDOR ");
-                printfHex((dev.vendor_id & 0xff00) >> 8);
-                printfHex(dev.vendor_id & 0xff);
+                printf(" = VENDOR %d", dev.vendor_id);
 
-                printf(", DEVICE ");
-                printfHex((dev.device_id & 0xff00) >> 8);
-                printfHex(dev.device_id & 0xff);
+                printf(", DEVICE %d", dev.device_id);
                 printf("\n");
                 for (uint8_t barNum = 0; barNum < 6; barNum++) {
                     BaseAddressRegister bar = GetBaseAddressRegister(bus, device, function, barNum);

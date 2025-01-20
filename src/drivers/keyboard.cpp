@@ -20,8 +20,7 @@ KeyBoardDriver::KeyBoardDriver(InterruptManager* manger, KeyBoardEventHandler* h
 
 KeyBoardDriver::~KeyBoardDriver() {}
 
-void printf(const char*);
-void printfHex(uint8_t);
+void printf(const char*, ...);
 
 void KeyBoardDriver::Activate() {
     while (commandport.Read() & 0x1) {
@@ -93,8 +92,7 @@ uint32_t KeyBoardDriver::HandleInterrupt(uint32_t esp) {
 
     default: 
         if (key < 0x80) {
-            printf("KEYBOARD 0x");
-            printfHex(key);
+            printf("KEYBOARD 0x%d", key);
         }
     }
     return esp;

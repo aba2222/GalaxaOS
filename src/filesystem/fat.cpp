@@ -4,8 +4,7 @@ using namespace myos::common;
 using namespace myos::drivers;
 using namespace myos::filesystem;
 
-void printf(const char*);
-void printfHex(uint8_t);
+void printf(const char*, ...);
 
 FatPartition::FatPartition(drivers::AdvancedTechnologyAttachment* atah, common::uint32_t partitionOffset) 
             : hd(atah), 

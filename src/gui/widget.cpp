@@ -3,11 +3,11 @@
 using namespace myos::common;
 using namespace myos::gui;
 
-void printDesk(String); 
+void printf(const char*, ...);
 
 Widget::Widget(Widget* parent, int32_t x, int32_t y,
         uint32_t w, uint32_t h, uint8_t r,
-        uint8_t g, uint8_t b, uint8_t classNum, String stringText) 
+        uint8_t g, uint8_t b, uint8_t classNum, String* stringText) 
         : parent(parent),
           x(x),
           y(y),
@@ -53,7 +53,7 @@ void Widget::Draw(SuperGraphicsContext* gc) {
             gc->PutLine(X + w, Y, X + w, Y + h);
             break;
         case 2:
-            gc->PutString((const uint8_t*)this->stringText.c_str(), X, Y, (r << 24) + (g << 16) + (b << 8), (parent->r << 24) + (parent->g << 16) + (parent->b << 8), w);
+            gc->PutString((const uint8_t*)this->stringText->c_str(), X, Y, (r << 24) + (g << 16) + (b << 8), (parent->r << 24) + (parent->g << 16) + (parent->b << 8), w);
             break;
         default:
             break;
@@ -79,7 +79,7 @@ bool Widget::ContainsCoordinate(int32_t x, int32_t y) {
 
 CompositeWidget::CompositeWidget(Widget* parent, int32_t x, int32_t y,
             uint32_t w, uint32_t h, uint8_t r,
-            uint8_t g, uint8_t b, uint8_t classNum, String stringText) 
+            uint8_t g, uint8_t b, uint8_t classNum, String* stringText) 
             : Widget(parent, x, y, w, h, r, g, b, classNum, stringText),
               focussedChild(0),
               numChildren(0) {
@@ -117,7 +117,7 @@ void CompositeWidget::OnMouseDown(int32_t x, int32_t y, common::uint8_t button) 
             children[i]->OnMouseDown(x - this->x, y - this->y, button);
             this->focussedChild = children[i];
             
-            printDesk("Mouse clicked.");
+            printf("Mouse clicked.");
             break;
         }
     }

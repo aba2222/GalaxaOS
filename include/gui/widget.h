@@ -11,7 +11,7 @@ namespace myos {
         public:
             Widget(Widget* parent, common::int32_t x, common::int32_t y,
                     common::uint32_t w, common::uint32_t h, common::uint8_t r,
-                    common::uint8_t g, common::uint8_t b, common::uint8_t classNum, common::String stringText);
+                    common::uint8_t g, common::uint8_t b, common::uint8_t classNum, common::String* stringText);
             ~Widget();
 
             virtual void GetFocus(Widget* widget);
@@ -30,7 +30,7 @@ namespace myos {
             common::int32_t x, y;
             common::uint32_t w, h;
             common::uint8_t r, g, b;
-            common::String stringText;
+            common::String* stringText;
             common::uint8_t classNum; //dektop = 0 window = 1 string = 2
         protected:
             Widget* parent;
@@ -41,7 +41,7 @@ namespace myos {
         public:
             CompositeWidget(Widget* parent, common::int32_t x, common::int32_t y,
                     common::uint32_t w, common::uint32_t h, common::uint8_t r,
-                    common::uint8_t g, common::uint8_t b, common::uint8_t classNum, common::String stringText);
+                    common::uint8_t g, common::uint8_t b, common::uint8_t classNum, common::String* stringText);
             ~CompositeWidget();
 
             virtual void GetFocus(Widget* widget);

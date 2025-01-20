@@ -12,7 +12,7 @@ namespace myos {
         class Desktop : public CompositeWidget, public drivers::MouseEventHandler, public drivers::KeyBoardEventHandler {
         public:
             Desktop(common::uint32_t w, common::uint32_t h, common::uint8_t r,
-                    common::uint8_t g, common::uint8_t b, common::SuperGraphicsContext* gc);
+                    common::uint8_t g, common::uint8_t b, common::SuperGraphicsContext* gc, common::String* shellText);
             ~Desktop();
             
             void OnMouseDown(common::uint8_t button);
@@ -23,14 +23,13 @@ namespace myos {
 
             void OnKeyDown(char);
             void OnKeyUp(char);
-            static common::String shellText;
             
         protected:
             common::uint32_t MouseX;
             common::uint32_t MouseY;
-            StringText shellGfx;
-
             common::SuperGraphicsContext* gc;
+
+            StringText shellGfx;
         };
     }
 }

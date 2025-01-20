@@ -51,23 +51,6 @@ bool TaskManager::AddTask(Task* task) {
 }
 
 CPUState* TaskManager::Schedule(CPUState* cpustate) {
-    /*if(thisTcb == nullptr) {
-        return cpustate;
-    }
-    if(nowTask == nullptr) {
-        nowTask = thisTcb;
-    }
-
-    if(nowTask != 0 && status != 0) {
-        nowTask->cpustate = cpustate;
-    }
-    if(status == 0) {
-        status = 1;
-    }
-
-    nowTask = nowTask->nextTask;
-    return nowTask->cpustate;*/
-
     if (thisTcb == nullptr) {
         return cpustate;  // 没有任务可调度，返回当前CPU状态
     }

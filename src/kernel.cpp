@@ -29,7 +29,16 @@ using namespace myos::hardwarecommunication;
 //#define GMODE1
 #define GMODE2
 
-SuperVideoGraphicsArray* svga;
+static String shellText = " ";
+void printDesk(String str) {
+    shellText = shellText + str;
+}
+
+void printDesk(char str) {
+    String stri = " ";
+    stri[0] = str;
+    shellText = shellText + stri;
+}
 
 void printf(const char* str){
     static uint16_t* VideoMemory = (uint16_t*)0xb8000;
@@ -206,15 +215,16 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     #endif
     #ifdef GMODE2
         uint32_t pixelwidth = multiboot_structure->framebuffer_bpp / 8;
-        svga = new SuperVideoGraphicsArray((uint8_t*)multiboot_structure->framebuffer_addr, multiboot_structure->framebuffer_width, 
+        SuperVideoGraphicsArray svga((uint8_t*)multiboot_structure->framebuffer_addr, multiboot_structure->framebuffer_width, 
                                       multiboot_structure->framebuffer_height, multiboot_structure->framebuffer_pitch,
                                       multiboot_structure->framebuffer_bpp, pixelwidth);
     #endif
+
     #ifdef GMODE1
         Desktop desktop(320,200, 0x00,0x00,0xA8);
     #endif
     #ifdef GMODE2
-        Desktop desktop(multiboot_structure->framebuffer_width, multiboot_structure->framebuffer_height, 0x87, 0xCE, 0xEB, svga);
+        Desktop desktop(multiboot_structure->framebuffer_width, multiboot_structure->framebuffer_height, 0x87, 0xCE, 0xEB, &svga, &shellText);
     #endif
 
     #ifdef GMODE1
@@ -285,8 +295,9 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     #ifdef GMODE2
         CompositeWidget tool1(&desktop, 0, 0, multiboot_structure->framebuffer_width, 30, 128, 128, 128, 0,"tool");
         desktop.AddChild(&tool1);
-        StringText timeString(&tool1, 10, 3, 330, 200, 0xFF, 0xFF, 0xFF, "11/04 05:14");
-        tool1.AddChild(&timeString);
+        String timeString = "xx/xx xx:xx:xx";
+        StringText timeStringText(&tool1, 10, 3, 330, 200, 0xFF, 0xFF, 0xFF, &timeString);
+        tool1.AddChild(&timeStringText);
 
         Window win1(&desktop, 114, 230, 350, 230, 0xFF, 0x00, 0x00,"win1");
         desktop.AddChild(&win1);
@@ -299,17 +310,20 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
         desktop.Draw();
         
         timeControl.ReadRtc();
-        timeString.thisStringText[0] = timeControl.month/10 + 48;
-        timeString.thisStringText[1] = timeControl.month%10 + 48;
+        timeString[0] = timeControl.month/10 + 48;
+        timeString[1] = timeControl.month%10 + 48;
 
-        timeString.thisStringText[3] = timeControl.day/10 + 48;
-        timeString.thisStringText[4] = timeControl.day%10 + 48;
+        timeString[3] = timeControl.day/10 + 48;
+        timeString[4] = timeControl.day%10 + 48;
 
-        timeString.thisStringText[6] = timeControl.hour/10 + 48;
-        timeString.thisStringText[7] = timeControl.hour%10 + 48;
+        timeString[6] = timeControl.hour/10 + 48;
+        timeString[7] = timeControl.hour%10 + 48;
 
-        timeString.thisStringText[9] = timeControl.minute/10 + 48;
-        timeString.thisStringText[10] = timeControl.minute%10 + 48;
+        timeString[9] = timeControl.minute/10 + 48;
+        timeString[10] = timeControl.minute%10 + 48;
+
+        timeString[12] = timeControl.second/10 + 48;
+        timeString[13] = timeControl.second%10 + 48;
         #endif
     }
 }

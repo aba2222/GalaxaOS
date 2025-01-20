@@ -37,30 +37,30 @@ obj/%.o: src/%.s
 	mkdir -p $(@D)
 	as ${ASPARAMS} -o $@ -c $<
 
-mykernel.bin: linker.ld ${objects}
+kernel.bin: linker.ld ${objects}
 	ld ${LDPARAMS} -T $< -o $@ font.o ${objects}
 
-install: mykernel.bin
-	sudo cp $< /boot/mykernel.bin
+install: kernel.bin
+	sudo cp $< /boot/kernel.bin
 
-mykernel.iso: mykernel.bin
+kernel.iso: kernel.bin
 	mkdir -p iso/boot/grub
 	cp $< iso/boot/
 	echo 'set timeout=0' > iso/boot/grub/grub.cfg
 	echo 'set default=0' >> iso/boot/grub/grub.cfg
 	echo '' >> iso/boot/grub/grub.cfg
 	echo 'menuentry "my os" {' >> iso/boot/grub/grub.cfg
-	echo '  multiboot /boot/mykernel.bin' >> iso/boot/grub/grub.cfg
+	echo '  multiboot /boot/kernel.bin' >> iso/boot/grub/grub.cfg
 	echo '  boot' >> iso/boot/grub/grub.cfg
 	echo '}' >> iso/boot/grub/grub.cfg
 	grub-mkrescue --output=$@ iso
 	rm -rf iso
 
-run: mykernel.iso
+run: kernel.iso
 	(killall qemu-system-i386 && sleep 1) || true
 	qemu-system-i386 -cdrom $< -boot d -m 512 &
 
 .PHONY: clean
 clean:
 	(killall qemu-system-i386 && sleep 1) || true
-	rm -rf mykernel.bin mykernel.iso obj
+	rm -rf kernel.bin kernel.iso obj

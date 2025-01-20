@@ -4,27 +4,17 @@ using namespace myos;
 using namespace myos::common;
 using namespace myos::gui;
 
-String Desktop::shellText = " ";
+void printDesk(String);
+void printDesk(char);
 
-void printDesk(String str) {
-    Desktop::shellText = Desktop::shellText + str;
-}
-
-void printDesk(char str) {
-    String stri = " ";
-    stri[0] = str;
-    Desktop::shellText = Desktop::shellText + stri;
-}
-
-Desktop::Desktop(common::uint32_t w, common::uint32_t h,
-                common::uint8_t r, common::uint8_t g, common::uint8_t b, common::SuperGraphicsContext* gc)
+Desktop::Desktop(uint32_t w, uint32_t h, uint8_t r, uint8_t g, uint8_t b, SuperGraphicsContext* gc, String* shellText)
 :   CompositeWidget(0,0,0, w,h,r,g,b, 0, nullptr),
     MouseEventHandler(),
     KeyBoardEventHandler(),
     gc(gc),
-    shellGfx(this,10,30,w,h,0x00,0x00,0x00,"Hello! shell." ) {
-    MouseX = 512;
-    MouseY = 384;
+    shellGfx(this,10,30,w,h,0x00,0x00,0x00, shellText) {
+    MouseX = w / 2;
+    MouseY = h / 2;
     AddChild(&shellGfx);
     printDesk("Desk init done.");
 }
@@ -33,7 +23,6 @@ Desktop::~Desktop() {
 }
 
 void Desktop::Draw() {
-    shellGfx.thisStringText = shellText;
     gc->Redraw();
     CompositeWidget::Draw(gc);
 

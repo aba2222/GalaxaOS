@@ -98,7 +98,7 @@ bool CompositeWidget::AddChild(Widget* child) {
 
 void CompositeWidget::Draw(SuperGraphicsContext* gc) {
     Widget::Draw(gc);
-    for(int i = numChildren-1; i >= 0; --i) {
+    for(int i = 0; i < numChildren; i++) {
         children[i]->Draw(gc);
     }
 }
@@ -116,8 +116,6 @@ void CompositeWidget::OnMouseDown(int32_t x, int32_t y, common::uint8_t button) 
         if(children[i]->ContainsCoordinate(x - this->x, y - this->y)) {
             children[i]->OnMouseDown(x - this->x, y - this->y, button);
             this->focussedChild = children[i];
-            
-            printf("Mouse clicked.");
             break;
         }
     }

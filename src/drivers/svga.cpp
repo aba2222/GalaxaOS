@@ -13,7 +13,7 @@ SuperVideoGraphicsArray::SuperVideoGraphicsArray(uint8_t* screen, uint32_t width
                           pitch(pitch),
                           depth(depth),
                           pixelwidth(pixelwidth) { 
-    BackBuffer = (uint8_t*)(new uint8_t [width * height * pixelwidth]);
+    BackBuffer = (uint8_t*)(new uint8_t [(width+1) * (height + 1)* pixelwidth]);
     PsfInit();
 }
 

@@ -40,9 +40,6 @@ obj/%.o: src/%.s
 kernel.bin: linker.ld ${objects}
 	ld ${LDPARAMS} -T $< -o $@ font.o ${objects}
 
-install: kernel.bin
-	sudo cp $< /boot/kernel.bin
-
 kernel.iso: kernel.bin
 	mkdir -p iso/boot/grub
 	cp $< iso/boot/

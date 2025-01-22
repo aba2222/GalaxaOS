@@ -4,5 +4,11 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.associations": {
+			"errno.h": "c",
+			"fcntl.h": "c",
+			"cstdint": "cpp"
+		}
+	}
 }

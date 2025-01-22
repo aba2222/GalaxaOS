@@ -69,7 +69,6 @@ void PeripheralComponentInterconnectController::SelectDrivers(DriverManger* driv
                 printf(" = VENDOR %d", dev.vendor_id);
 
                 printf(", DEVICE %d", dev.device_id);
-                printf("\n");
                 for (uint8_t barNum = 0; barNum < 6; barNum++) {
                     BaseAddressRegister bar = GetBaseAddressRegister(bus, device, function, barNum);
                     if (bar.address && (bar.type == InputOutput)) {
@@ -81,6 +80,7 @@ void PeripheralComponentInterconnectController::SelectDrivers(DriverManger* driv
                 if (driver != 0) {//<-In this?
                    driverManger->AddDriver(driver);
                 }
+                printf("\n");
             }
         }
     }
@@ -113,12 +113,35 @@ Driver* PeripheralComponentInterconnectController::GetDriver(PeripheralComponent
         }
         break;
     }
-
     switch (dev.class_id) {
+    case 0x01:
+        switch (dev.subclass_id) {
+        case 0x01:
+            printf(" IDE Controller");
+            break;
+        case 0x06:
+            printf(" Mass Storage Controller");
+            break;
+        }
+        break;
+    case 0x02:
+        switch (dev.subclass_id) {
+        case 0x00:
+            printf(" Ethernet Controller");
+            break;
+        }
+        break;
     case 0x03:
         switch (dev.subclass_id) {
         case 0x00: //VGA
-            printf("V");
+            if(dev.interface_id == 0x00) printf(" VGA Controller");
+            break;
+        }
+        break;
+    case 0x06:
+        switch (dev.subclass_id) {
+        case 0x00:
+            printf(" Host Bridge");
             break;
         }
         break;

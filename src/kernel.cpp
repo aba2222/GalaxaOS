@@ -134,20 +134,6 @@ void SysCallPrint(const char* str) {
     asm("int $0x80" : : "a" (4), "b" (str));
 }
 
-//more task
-void TaskA() {
-    while (1) {
-        //shell1.ShellPrintf((const char*)"A");
-        SysCallPrint((const char*)"A");
-    }
-}
-
-void TaskB() {
-    while (1) {
-        SysCallPrint((const char*)"B");
-    }
-}
-
 typedef void (*constructor)();
 extern "C" constructor start_ctors;
 extern "C" constructor end_ctors;
@@ -158,15 +144,20 @@ extern "C" void callConstructors(){
     }
 }
 
+Desktop* globalDesktop;
+
+void RedrawDesktop() {
+    while (true) {
+        #ifdef GMODE2
+        globalDesktop->Draw();
+        #endif
+    }
+}
+
 extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magicnumber){
     GlobalDescriptorTable gdt;
 
     TaskManager taskmanager;
-    //Task task1(&gdt, TaskA);
-    //Task task2(&gdt, TaskB);
-    //taskmanager.AddTask(&task1);
-    //taskmanager.AddTask(&task2);
-
     //mmanager
     size_t heap = 10 * 1024 * 1024;
     uint32_t* memupper = (uint32_t*)((size_t)multiboot_structure + 8);
@@ -204,6 +195,8 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
         Desktop desktop(multiboot_structure->framebuffer_width, multiboot_structure->framebuffer_height, 0x87, 0xCE, 0xEB, &svga, &shellText);
     #endif
 
+    globalDesktop = &desktop;
+
     #ifdef GMODE1
         KeyBoardDriver keyboard(&interrupts, &desktop);
         MouseDriver mouse(&interrupts, &desktop);
@@ -231,7 +224,7 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     //amd_am79c973* eth0 = (amd_am79c973*)(drvManger.drivers[2]);
     //eth0->Send((uint8_t*)"Hello Network", 13);
 
-    printf("\nS-ATA primary master: ");
+    /*printf("\nS-ATA primary master: ");
     AdvancedTechnologyAttachment ata0m(true, 0x1F0);
     ata0m.Identify();
     
@@ -245,7 +238,8 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     DirectoriesFat32 part1Dirent[32] = {0};
     part1->GetFatFileList((DirectoriesFat32*)&part1Dirent);
     char* filename = part1->ReadFileName(part1Dirent[1]);
-    part1->ReadTxtFile(part1Dirent[1]);
+    part1->ReadTxtFile(part1Dirent[1]);*/
+    
     //AdvancedTechnologyAttachment ata1m(true, 0x170);
     //ata1m.Identify();
     //AdvancedTechnologyAttachment ata1s(false, 0x170);
@@ -285,10 +279,11 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
         desktop.AddChild(&win2);
     #endif
 
+    Task redrawTask(&gdt, RedrawDesktop);
+    taskmanager.AddTask(&redrawTask);
+
     while(1) {
         #ifdef GMODE2
-        desktop.Draw();
-        
         timeControl.ReadRtc();
         timeString[0] = timeControl.month/10 + 48;
         timeString[1] = timeControl.month%10 + 48;

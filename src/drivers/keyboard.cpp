@@ -4,6 +4,8 @@ using namespace myos::common;
 using namespace myos::drivers;
 using namespace myos::hardwarecommunication;
 
+void printf(const char*, ...);
+
 KeyBoardEventHandler::KeyBoardEventHandler() {}
 
 void KeyBoardEventHandler::OnKeyDown(char) {}
@@ -23,7 +25,7 @@ KeyBoardDriver::~KeyBoardDriver() {}
 void printf(const char*, ...);
 
 void KeyBoardDriver::Activate() {
-    while (commandport.Read() & 0x1) {
+    /*while (commandport.Read() & 0x1) {
         dataport.Read();
     }
     commandport.Write(0xae);
@@ -31,7 +33,7 @@ void KeyBoardDriver::Activate() {
     uint8_t status = (dataport.Read() | 1) & ~0x10;
     commandport.Write(0x60);
     dataport.Write(status);
-    dataport.Write(0xf4);
+    dataport.Write(0xf4);*/
 }
 
 uint32_t KeyBoardDriver::HandleInterrupt(uint32_t esp) {

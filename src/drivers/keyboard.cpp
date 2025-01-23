@@ -99,3 +99,7 @@ uint32_t KeyBoardDriver::HandleInterrupt(uint32_t esp) {
     }
     return esp;
 }
+
+const char* KeyBoardDriver::GetDriverName() {
+    return "PS/2 Keyboard Driver";
+}

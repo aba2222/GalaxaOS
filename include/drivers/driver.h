@@ -11,6 +11,7 @@ namespace myos {
             virtual void Activate();
             virtual int Reset();
             virtual void Deactivate();
+            const virtual char* GetDriverName();
         };
 
         class DriverManger {

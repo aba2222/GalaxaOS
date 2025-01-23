@@ -16,7 +16,7 @@ List::~List() {
 
 void List::AddItem(String* itemText) {
     if (numChildren >= 100) return;
-    StringText* item = new StringText(this, 0, numChildren * 20, w, 20, r, g, b, itemText);
+    StringText* item = new StringText(this, 0, (numChildren - 1) * 20, w, 20, r, g, b, itemText);
     AddChild(item);
 }
 

@@ -13,6 +13,10 @@ int Driver::Reset() {
     return 0;
 }
 
+const char* Driver::GetDriverName() {
+    return "Unnamed Driver";
+}
+
 void Driver::Deactivate() {}
 
 DriverManger::DriverManger()

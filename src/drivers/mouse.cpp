@@ -66,3 +66,7 @@ uint32_t MouseDriver::HandleInterrupt(uint32_t esp) {
 
    return esp;
 }
+
+const char* MouseDriver::GetDriverName() {
+    return "PS/2 Mouse Driver";
+}

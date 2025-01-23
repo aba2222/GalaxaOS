@@ -122,6 +122,7 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
 
     MemoryManager memoryManager(heap, (*memupper) * 1024 - heap - 10 * 1024);
 
+    printf("GalaxaOS 0.0.1\n");
     printf("magicnumber: %d ", magicnumber);
     printf("vbe_mode_info->width: %d\n", multiboot_structure->vbe_mode_info->width);
     printf("vbe_mode_info->height: %d\n", multiboot_structure->vbe_mode_info->height);
@@ -225,16 +226,18 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
 
         String windowsName1 = "Window 1";
         Window win1(&desktop, 114, 230, 350, 230, 0xFF, 0x00, 0x00, &windowsName1);
-        Button but1(&win1, 20, 30, 80, 30, 0xA8, 0xA8, 0xA8, new String("Button 1"));
-        but1.SetOnClick(&TaskA);
-        win1.AddChild(&but1);
+        List lit1(&win1, 0, 20, 350, 210, 0xFF, 0x00, 0x00, 0, new String("List 1"));
+        for(int driverIndex = 0; driverIndex < drvManger.numDrivers; driverIndex++) {
+            lit1.AddItem(new String(drvManger.drivers[driverIndex]->GetDriverName()));
+        }
+        win1.AddChild(&lit1);
         desktop.AddChild(&win1);
 
         String windowsName2 = "Window 2";
         Window win2(&desktop, 568, 230, 200, 100, 0x00, 0xAA, 0x00, &windowsName2);
-        List lit1(&win2, 10, 20, 180, 80, 0x00, 0x00, 0xA8, 0, new String("List 1"));
-        lit1.AddItem(new String("item 1"));
-        win2.AddChild(&lit1);
+        Button but1(&win2, 20, 30, 80, 30, 0xA8, 0xA8, 0xA8, new String("Button 1"));
+        but1.SetOnClick(&TaskA);
+        win2.AddChild(&but1);
         desktop.AddChild(&win2);
     #endif
 

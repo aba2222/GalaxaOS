@@ -22,6 +22,7 @@ namespace myos {
             ~KeyBoardDriver();
             virtual myos::common::uint32_t HandleInterrupt(myos::common::uint32_t esp);
             virtual void Activate();
+            const virtual char* GetDriverName();
         private:
             myos::hardwarecommunication::Port8Bit dataport;
             myos::hardwarecommunication:: Port8Bit commandport;

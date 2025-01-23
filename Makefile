@@ -26,6 +26,9 @@ objects = obj/loader.o \
 		  obj/gui/stringtext.o \
 		  obj/gui/window.o \
 		  obj/gui/desktop.o \
+		  obj/gui/button.o \
+		  obj/gui/list.o \
+		  obj/gui/scrollbar.o \
 		  obj/filesystem/dospart.o\
 		  obj/filesystem/fat.o \
 

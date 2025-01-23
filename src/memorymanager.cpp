@@ -94,13 +94,25 @@ void* operator new[](size_t size, void* ptr) {
 }
 
 void operator delete(void* ptr) {
-    if (MemoryManager::activeMemoryManager != 0) {
+    if (MemoryManager::activeMemoryManager != nullptr) {
+        MemoryManager::activeMemoryManager->free(ptr);
+    }
+}
+
+void operator delete(void* ptr, size_t) {
+    if (MemoryManager::activeMemoryManager != nullptr) {
         MemoryManager::activeMemoryManager->free(ptr);
     }
 }
 
 void operator delete[](void* ptr) {
-    if (MemoryManager::activeMemoryManager != 0) {
+    if (MemoryManager::activeMemoryManager != nullptr) {
+        MemoryManager::activeMemoryManager->free(ptr);
+    }
+}
+
+void operator delete[](void* ptr, size_t) {
+    if (MemoryManager::activeMemoryManager != nullptr) {
         MemoryManager::activeMemoryManager->free(ptr);
     }
 }

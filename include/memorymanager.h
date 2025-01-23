@@ -33,7 +33,8 @@ void* operator new(myos::common::size_t size, void* ptr);
 void* operator new[](myos::common::size_t size, void* ptr);
 
 void operator delete(void* ptr);
+void operator delete(void* ptr, myos::common::size_t);
 void operator delete[](void* ptr);
-
+void operator delete[](void* ptr, myos::common::size_t);
 
 #endif

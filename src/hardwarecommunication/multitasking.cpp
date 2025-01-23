@@ -5,7 +5,6 @@ using namespace myos::common;
 using namespace myos::hardwarecommunication;
 using namespace myos;
 
-void printf(const char* str);
 
 Task::Task(GlobalDescriptorTable* gdt, void entrypoint()) {
     cpustate = (CPUState*)(stack + 4096 - sizeof(CPUState));

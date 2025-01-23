@@ -1,6 +1,6 @@
 # GalaxaOS
 
-It's a i386 operating system.
+This is an operating system based on i386.
 
 ## What it does
 GalaxaOS is a simple operating system for own study. It includes basic functionalities such as:

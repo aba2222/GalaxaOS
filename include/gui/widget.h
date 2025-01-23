@@ -27,6 +27,8 @@ namespace myos {
             
             virtual bool ContainsCoordinate(common::int32_t x, common::int32_t y);
 
+            virtual void Animate();
+
             common::int32_t x, y;
             common::uint32_t w, h;
             common::uint8_t r, g, b;
@@ -55,9 +57,10 @@ namespace myos {
             virtual void OnKeyUp(char str);
             
             virtual bool AddChild(Widget* child);
-        private:
-            Widget* children[100];
+        protected:
             int numChildren;
+            Widget* children[100];
+        private:
             Widget* focussedChild;
         };
     }

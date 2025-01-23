@@ -14,6 +14,9 @@
 #include "drivers/svga.h"
 #include "gui/desktop.h"
 #include "gui/stringtext.h"
+#include "gui/window.h"
+#include "gui/button.h"
+#include "gui/list.h"
 #include "drivers/amd_am79c973.h"
 #include "drivers/ata.h"
 #include "filesystem/dospart.h"
@@ -85,55 +88,6 @@ void printf(const char* format, ...) {
     shellText = shellText + buffer;
 }
 
-class PrintKeyboardEventHandler : public KeyBoardEventHandler {
-public:
-    void OnKeyDown(char c) {
-        char* foo = (char*)" ";
-        foo[0] = c;
-        printf(foo);
-    }
-};
-
-class MouseToConsole : public MouseEventHandler {
-public:
-    MouseToConsole()
-        : x(40),
-          y(12) {
-     }
-
-    void OnActivate() {
-        uint16_t* VideoMemory = (uint16_t*)0xb8000;
-        VideoMemory[y * 80 + x] = ((VideoMemory[y * 80 + x] & 0xf000) >> 4) |
-                                ((VideoMemory[y * 80 + x] & 0x0f00) << 4) |
-                                (VideoMemory[y * 80 + x] & 0x00ff);
-    }
-    
-    void OnMouseMove(int8_t nx, int8_t ny) {
-        uint16_t* VideoMemory = (uint16_t*)0xb8000;
-        VideoMemory[y * 80 + x] = ((VideoMemory[y * 80 + x] & 0xf000) >> 4) |
-                                ((VideoMemory[y * 80 + x] & 0xf00) << 4) |
-                                (VideoMemory[y * 80 + x] & 0x00ff);
-
-        x += nx;
-        if(x < 0) x = 0;
-        else if (x >= 80) x = 79;
-
-        y += ny;
-        if (y < 0) y = 0;
-        else if (y >= 25) y = 24;
-
-        VideoMemory[y * 80 + x] = ((VideoMemory[y * 80 + x] & 0xf000) >> 4) |
-                                ((VideoMemory[y * 80 + x] & 0xf00) << 4) |
-                                (VideoMemory[y * 80 + x] & 0x00ff);
-    }
-private:
-    int8_t x, y;
-};
-
-void SysCallPrint(const char* str) {
-    asm("int $0x80" : : "a" (4), "b" (str));
-}
-
 typedef void (*constructor)();
 extern "C" constructor start_ctors;
 extern "C" constructor end_ctors;
@@ -154,6 +108,10 @@ void RedrawDesktop() {
     }
 }
 
+void TaskA() {
+    printf("A");
+}
+
 extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magicnumber){
     GlobalDescriptorTable gdt;
 
@@ -165,8 +123,8 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     MemoryManager memoryManager(heap, (*memupper) * 1024 - heap - 10 * 1024);
 
     printf("magicnumber: %d ", magicnumber);
-    printf("vbe_mode: %d ", multiboot_structure->vbe_mode);
-    printf("vbe_mode_info->width: %d\n", multiboot_structure->vbe_mode_info);
+    printf("vbe_mode_info->width: %d\n", multiboot_structure->vbe_mode_info->width);
+    printf("vbe_mode_info->height: %d\n", multiboot_structure->vbe_mode_info->height);
     printf("memupper: %d ", *memupper);
     printf("heap: %d", heap);
 
@@ -200,16 +158,10 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     #ifdef GMODE1
         KeyBoardDriver keyboard(&interrupts, &desktop);
         MouseDriver mouse(&interrupts, &desktop);
-    #else
-        #ifdef GMODE2
-            KeyBoardDriver keyboard(&interrupts, &desktop);
-            MouseDriver mouse(&interrupts, &desktop);
-        #else
-            PrintKeyboardEventHandler kbhandler;
-            MouseToConsole mousehandler;
-            KeyBoardDriver keyboard(&interrupts, &kbhandler);
-            MouseDriver mouse(&interrupts, &mousehandler);
-        #endif
+    #endif
+    #ifdef GMODE2
+        KeyBoardDriver keyboard(&interrupts, &desktop);
+        MouseDriver mouse(&interrupts, &desktop);
     #endif
     drvManger.AddDriver(&keyboard);
     drvManger.AddDriver(&mouse);
@@ -273,9 +225,16 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
 
         String windowsName1 = "Window 1";
         Window win1(&desktop, 114, 230, 350, 230, 0xFF, 0x00, 0x00, &windowsName1);
+        Button but1(&win1, 20, 30, 80, 30, 0xA8, 0xA8, 0xA8, new String("Button 1"));
+        but1.SetOnClick(&TaskA);
+        win1.AddChild(&but1);
         desktop.AddChild(&win1);
+
         String windowsName2 = "Window 2";
         Window win2(&desktop, 568, 230, 200, 100, 0x00, 0xAA, 0x00, &windowsName2);
+        List lit1(&win2, 10, 20, 180, 80, 0x00, 0x00, 0xA8, 0, new String("List 1"));
+        lit1.AddItem(new String("item 1"));
+        win2.AddChild(&lit1);
         desktop.AddChild(&win2);
     #endif
 

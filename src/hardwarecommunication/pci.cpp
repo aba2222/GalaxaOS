@@ -92,7 +92,7 @@ Driver* PeripheralComponentInterconnectController::GetDriver(PeripheralComponent
     case 0x1022: //AMD
         switch (dev.device_id) {
         case 0x2000:
-            printf("am79c973");
+            printf(" am79c973");
             driver = (amd_am79c973*) MemoryManager::activeMemoryManager->malloc(sizeof(amd_am79c973));
             if(driver != 0) {
                 new (driver) amd_am79c973(&dev, interrupts);
@@ -106,9 +106,10 @@ Driver* PeripheralComponentInterconnectController::GetDriver(PeripheralComponent
         }
         break;
     case 0x8086: //Intel
+        printf(" Intel");
         switch (dev.device_id) {
-        case 0x2000:
-            printf("Intel ");
+        case 0x100E:
+            printf(" Ethernet i217");
             break;
         }
         break;

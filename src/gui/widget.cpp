@@ -45,7 +45,6 @@ void Widget::Draw(SuperGraphicsContext* gc) {
             gc->FillRectangle(X, Y, w, h, r, g, b);
 
             gc->FillRectangle(X, Y, w, 20, 128, 128, 128);
-            //gc->PutString((uint8_t*)this->stringText, X + 2, Y, 0, (128 << 24) + (128 << 16) + (128 << 8), this->w);
 
             gc->PutLine(X, Y, X + w, Y);
             gc->PutLine(X, Y + h, X + w, Y + h);
@@ -65,6 +64,8 @@ void Widget::OnMouseDown(int32_t x, int32_t y, uint8_t button) {
     //  GetFocus(this);
     //}
 }
+
+void Widget::Animate() {}
 void Widget::OnMouseUp(int32_t x, int32_t y, uint8_t button) {}
 void Widget::OnMouseMove(int32_t x, int32_t y, int32_t nx, int32_t ny) {}
 void Widget::OnKeyDown(char str) {}

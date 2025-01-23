@@ -58,7 +58,7 @@ uint32_t KeyBoardDriver::HandleInterrupt(uint32_t esp) {
     case 0x12: if (shift) handler->OnKeyDown('E'); else handler->OnKeyDown('e'); break;
     case 0x13: if (shift) handler->OnKeyDown('R'); else handler->OnKeyDown('r'); break;
     case 0x14: if (shift) handler->OnKeyDown('T'); else handler->OnKeyDown('t'); break;
-    case 0x15: if (shift) handler->OnKeyDown('Z'); else handler->OnKeyDown('z'); break;
+    case 0x15: if (shift) handler->OnKeyDown('Y'); else handler->OnKeyDown('y'); break;
     case 0x16: if (shift) handler->OnKeyDown('U'); else handler->OnKeyDown('u'); break;
     case 0x17: if (shift) handler->OnKeyDown('I'); else handler->OnKeyDown('i'); break;
     case 0x18: if (shift) handler->OnKeyDown('O'); else handler->OnKeyDown('o'); break;
@@ -74,7 +74,7 @@ uint32_t KeyBoardDriver::HandleInterrupt(uint32_t esp) {
     case 0x25: if (shift) handler->OnKeyDown('K'); else handler->OnKeyDown('k'); break;
     case 0x26: if (shift) handler->OnKeyDown('L'); else handler->OnKeyDown('l'); break;
 
-    case 0x2C: if (shift) handler->OnKeyDown('Y'); else handler->OnKeyDown('y'); break;
+    case 0x2C: if (shift) handler->OnKeyDown('Z'); else handler->OnKeyDown('z'); break;
     case 0x2D: if (shift) handler->OnKeyDown('X'); else handler->OnKeyDown('x'); break;
     case 0x2E: if (shift) handler->OnKeyDown('C'); else handler->OnKeyDown('c'); break;
     case 0x2F: if (shift) handler->OnKeyDown('V'); else handler->OnKeyDown('v'); break;

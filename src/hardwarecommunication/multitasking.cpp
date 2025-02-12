@@ -4,7 +4,7 @@
 using namespace myos::common;
 using namespace myos::hardwarecommunication;
 using namespace myos;
-
+void printf(const char*, ...);
 
 Task::Task(GlobalDescriptorTable* gdt, void entrypoint()) {
     cpustate = (CPUState*)(stack + 4096 - sizeof(CPUState));
@@ -40,9 +40,9 @@ bool TaskManager::AddTask(Task* task) {
         thisTcb = task;
         thisTcb->nextTask = task;
         thisTcb->headTask = task;
-    } else {
-        task->nextTask = thisTcb->headTask;
-        thisTcb->nextTask = task;
+    } else {  
+        task->nextTask = thisTcb->headTask->nextTask;
+        thisTcb->headTask->nextTask = task;
         thisTcb = task;
     }
 

@@ -16,8 +16,8 @@ namespace myos {
         public:
             Port8Bit(myos::common::uint16_t portnumber);
             ~Port8Bit();
-            virtual void Write(myos::common::uint8_t data);
-            virtual myos::common::uint8_t Read();
+            void Write(myos::common::uint8_t data, myos::common::uint8_t offset = 0);
+            virtual myos::common::uint8_t Read(myos::common::uint8_t offset = 0);
         protected:
             static inline myos::common::uint8_t Read8(myos::common::uint16_t _port) {
                 myos::common::uint8_t result;
@@ -33,7 +33,7 @@ namespace myos {
         public:
             Port8BitSlow(myos::common::uint16_t portnumber);
             ~Port8BitSlow();
-            virtual void Write(myos::common::uint8_t data);
+            virtual void Write(myos::common::uint8_t data, myos::common::uint8_t offset = 0);
         protected:
             static inline void Write8Slow(myos::common::uint16_t _port, myos::common::uint8_t _data){
                 __asm__ volatile("outb %0, %1\njmp 1f\n1: jmp 1f\n1:" : : "a" (_data), "Nd" (_port));
@@ -44,8 +44,8 @@ namespace myos {
         public:
             Port16Bit(myos::common::uint16_t portnumber);
             ~Port16Bit();
-            virtual void Write(myos::common::uint16_t data);
-            virtual myos::common::uint16_t Read();
+            virtual void Write(myos::common::uint16_t data, myos::common::uint8_t offset = 0);
+            virtual myos::common::uint16_t Read(myos::common::uint8_t offset = 0);
         protected:
             static inline myos::common::uint16_t Read16(myos::common::uint16_t _port) {
                 myos::common::uint16_t result;
@@ -61,8 +61,8 @@ namespace myos {
         public:
             Port32Bit(myos::common::uint16_t portnumber);
             ~Port32Bit();
-            virtual void Write(myos::common::uint32_t data);
-            virtual myos::common::uint32_t Read();
+            virtual void Write(myos::common::uint32_t data, myos::common::uint8_t offset = 0);
+            virtual myos::common::uint32_t Read(myos::common::uint8_t offset = 0);
         protected:
             static inline myos::common::uint32_t Read32(myos::common::uint16_t _port) {
                 myos::common::uint32_t result;
@@ -75,6 +75,5 @@ namespace myos {
         };
     }
 }
-
 
 #endif

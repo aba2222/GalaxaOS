@@ -12,6 +12,7 @@
 #include "drivers/mouse.h"
 #include "drivers/vga.h"
 #include "drivers/svga.h"
+#include "drivers/serialport.h"
 #include "gui/desktop.h"
 #include "gui/stringtext.h"
 #include "gui/window.h"
@@ -99,12 +100,31 @@ extern "C" void callConstructors(){
 }
 
 Desktop* globalDesktop;
-
+Times* globalTimeControl;
+String timeString = "xx/xx xx:xx:xx";
 void RedrawDesktop() {
     while (true) {
-        #ifdef GMODE2
         globalDesktop->Draw();
-        #endif
+    }
+}
+
+void TimeLoop() {
+    while (true) {   
+        globalTimeControl->ReadRtc();
+        timeString[0] = globalTimeControl->month/10 + 48;
+        timeString[1] = globalTimeControl->month%10 + 48;
+    
+        timeString[3] = globalTimeControl->day/10 + 48;
+        timeString[4] = globalTimeControl->day%10 + 48;
+    
+        timeString[6] = globalTimeControl->hour/10 + 48;
+        timeString[7] = globalTimeControl->hour%10 + 48;
+    
+        timeString[9] = globalTimeControl->minute/10 + 48;
+        timeString[10] = globalTimeControl->minute%10 + 48;
+    
+        timeString[12] = globalTimeControl->second/10 + 48;
+        timeString[13] = globalTimeControl->second%10 + 48;
     }
 }
 
@@ -123,7 +143,6 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     MemoryManager memoryManager(heap, (*memupper) * 1024 - heap - 10 * 1024);
 
     printf("GalaxaOS 0.0.1\n");
-    printf("magicnumber: %d ", magicnumber);
     printf("vbe_mode_info->width: %d\n", multiboot_structure->vbe_mode_info->width);
     printf("vbe_mode_info->height: %d\n", multiboot_structure->vbe_mode_info->height);
     printf("memupper: %d ", *memupper);
@@ -171,6 +190,8 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     PCIController.SelectDrivers(&drvManger, &interrupts);
 
     Times timeControl(0x70, 0x71);
+    globalTimeControl = &timeControl;
+    SerialPort serialPort(COM1);
 
     drvManger.ActivateAll(); 
 
@@ -208,7 +229,7 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     //soundManager.play_sound(10);
 
     printf("\n-----Init Done-----\n");
-    
+
     #ifdef GMODE1
         vga.SetMode(320, 200, 8);
         Window win1(&desktop, 10, 10, 20, 20, 0xA8, 0x00, 0x00);
@@ -220,7 +241,6 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
         String toolName1 = "tool";
         CompositeWidget tool1(&desktop, 0, 0, multiboot_structure->framebuffer_width, 30, 128, 128, 128, 0, &toolName1);
         desktop.AddChild(&tool1);
-        String timeString = "xx/xx xx:xx:xx";
         StringText timeStringText(&tool1, 10, 3, 330, 200, 0xFF, 0xFF, 0xFF, &timeString);
         tool1.AddChild(&timeStringText);
 
@@ -240,27 +260,14 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
         win2.AddChild(&but1);
         desktop.AddChild(&win2);
     #endif
+    serialPort.WriteSerial('G');serialPort.WriteSerial('a'); serialPort.WriteSerial('l');
+    serialPort.WriteSerial('a');serialPort.WriteSerial('x');serialPort.WriteSerial('a');
+    serialPort.WriteSerial('O');serialPort.WriteSerial('S');
 
     Task redrawTask(&gdt, RedrawDesktop);
     taskmanager.AddTask(&redrawTask);
-
-    while(1) {
-        #ifdef GMODE2
-        timeControl.ReadRtc();
-        timeString[0] = timeControl.month/10 + 48;
-        timeString[1] = timeControl.month%10 + 48;
-
-        timeString[3] = timeControl.day/10 + 48;
-        timeString[4] = timeControl.day%10 + 48;
-
-        timeString[6] = timeControl.hour/10 + 48;
-        timeString[7] = timeControl.hour%10 + 48;
-
-        timeString[9] = timeControl.minute/10 + 48;
-        timeString[10] = timeControl.minute%10 + 48;
-
-        timeString[12] = timeControl.second/10 + 48;
-        timeString[13] = timeControl.second%10 + 48;
-        #endif
+    Task timeLoopTask(&gdt, TimeLoop);
+    taskmanager.AddTask(&timeLoopTask);
+    while (true) {
     }
 }

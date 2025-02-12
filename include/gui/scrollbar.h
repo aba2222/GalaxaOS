@@ -12,10 +12,7 @@ namespace myos {
                       common::uint8_t g, common::uint8_t b);
             ~Scrollbar();
 
-            void OnMouseDown(common::int32_t x, common::int32_t y, common::uint8_t button) override;
             void Draw(common::SuperGraphicsContext* gc) override;
-
-            common::int32_t position;
         };
     }
 }

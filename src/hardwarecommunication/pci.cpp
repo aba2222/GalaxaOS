@@ -1,5 +1,7 @@
 #include "hardwarecommunication/pci.h"
-#include "drivers/amd_am79c973.h"
+#include "drivers/network/amd_am79c973.h"
+#include "drivers/network/intel_e1000.h"
+#include "drivers/network/realtek_8139.h"
 #include "memorymanager.h"
 
 using namespace myos;
@@ -58,7 +60,7 @@ void PeripheralComponentInterconnectController::SelectDrivers(DriverManger* driv
             int numFunctions = DeviceHasFunctions((uint8_t)bus, device) ? 8 : 1;
             for(uint8_t function = 0; function < numFunctions; function++) {
                 PeripheralComponentInterconnectDeviceDescriptor dev = GetDeviceDescriptor(bus, device, function);
-                if(dev.vendor_id == 0 || dev.vendor_id == 0xffff) break; //break or conitune?
+                if(dev.vendor_id == 0 || dev.vendor_id == 0xffff) break;
 
                 printf("PCI BUS %d", (bus & 0xff));
                 
@@ -71,13 +73,16 @@ void PeripheralComponentInterconnectController::SelectDrivers(DriverManger* driv
                 printf(", DEVICE %d", dev.device_id);
                 for (uint8_t barNum = 0; barNum < 6; barNum++) {
                     BaseAddressRegister bar = GetBaseAddressRegister(bus, device, function, barNum);
+                    if(barNum == 0) {
+                        dev.bar0_type = (uint8_t)bar.type;
+                        dev.bar0_adress = (uint32_t)bar.address;
+                    }
                     if (bar.address && (bar.type == InputOutput)) {
                         dev.portBase = (uint32_t)bar.address;
                     }
-                    //In this?
                 }
                 Driver* driver = GetDriver(dev, interrupts);
-                if (driver != 0) {//<-In this?
+                if (driver != 0) {
                    driverManger->AddDriver(driver);
                 }
                 printf("\n");
@@ -105,11 +110,37 @@ Driver* PeripheralComponentInterconnectController::GetDriver(PeripheralComponent
             break;
         }
         break;
+    case 0x10EC:
+        printf(" Realtek");
+        switch (dev.device_id) {
+        case 0x8139:
+            printf(" 8139");
+            driver = (realtek_8139*) MemoryManager::activeMemoryManager->malloc(sizeof(realtek_8139));
+            if(driver != 0) {
+                new (driver) realtek_8139(&dev);
+            }
+            else {
+                printf("instantiation failed");
+            }
+
+            return driver;
+            break;
+        }
+        break;
     case 0x8086: //Intel
         printf(" Intel");
         switch (dev.device_id) {
         case 0x100E:
             printf(" Ethernet i217");
+            driver = (intel_e1000*) MemoryManager::activeMemoryManager->malloc(sizeof(intel_e1000));
+            if(driver != 0) {
+                new (driver) intel_e1000(&dev);
+            }
+            else {
+                printf("instantiation failed");
+            }
+
+            return driver;
             break;
         }
         break;

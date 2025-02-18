@@ -1,4 +1,4 @@
-#include "drivers/amd_am79c973.h"
+#include "drivers/network/amd_am79c973.h"
 
 using namespace myos::hardwarecommunication;
 using namespace myos::drivers;

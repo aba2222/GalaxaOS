@@ -47,6 +47,8 @@ namespace myos {
             CPUState* Schedule(CPUState* cpustate);
             void LockScheduler(void);
             void UnLockScheduler(void);
+            void LockStuff(void);
+            void UnlockStuff(void);
             void BlockTask(int reason);
             void UnblockTask(Task* task);
     
@@ -55,6 +57,7 @@ namespace myos {
             Task* nowTask;
             bool status;
             int IRQDisableCounter;
+            int PostponeTaskSwitchesCounter;
         };
     }
 }

@@ -28,6 +28,8 @@ namespace myos {
             ~PeripheralComponentInterconnectDeviceDescriptor();
         
             myos::common::uint32_t portBase;
+            common::uint8_t bar0_type;
+            common::uint32_t bar0_adress;
             myos::common::uint32_t interrupt;
 
             myos::common::uint8_t bus;

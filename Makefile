@@ -13,6 +13,7 @@ objects = obj/loader.o \
 		  obj/hardwarecommunication/pci.o \
 		  obj/hardwarecommunication/multitasking.o \
 		  obj/hardwarecommunication/port.o \
+		  obj/hardwarecommunication/mmioutils.o \
 		  obj/hardwarecommunication/times.o \
 		  obj/hardwarecommunication/sound.o \
 		  obj/drivers/keyboard.o \
@@ -22,7 +23,9 @@ objects = obj/loader.o \
 		  obj/drivers/driver.o \
 		  obj/drivers/ata.o \
 		  obj/drivers/serialport.o \
-		  obj/drivers/amd_am79c973.o \
+		  obj/drivers/network/amd_am79c973.o \
+		  obj/drivers/network/intel_e1000.o \
+		  obj/drivers/network/realtek_8139.o \
 		  obj/gui/widget.o \
 		  obj/gui/stringtext.o \
 		  obj/gui/window.o \
@@ -59,7 +62,7 @@ kernel.iso: kernel.bin
 
 run: kernel.iso
 	(killall qemu-system-i386 && sleep 1) || true
-	qemu-system-i386 -cdrom $< -boot d -m 512 &
+	qemu-system-i386 -cdrom $< -boot d -m 512 -nic model=rtl8139 &
 
 .PHONY: clean
 clean:

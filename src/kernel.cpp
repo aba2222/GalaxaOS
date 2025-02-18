@@ -18,7 +18,6 @@
 #include "gui/window.h"
 #include "gui/button.h"
 #include "gui/list.h"
-#include "drivers/amd_am79c973.h"
 #include "drivers/ata.h"
 #include "filesystem/dospart.h"
 #include "filesystem/fat.h"
@@ -47,6 +46,15 @@ void printf(const char* format, ...) {
                 case 'c': {
                     buffer[j++] = (char)args[0];
                     args++;
+                    break;
+                }
+                case 'x': {
+                    char* hex = "0123456789ABCDEF";
+                    int n = args[0];
+                    args++;
+                    for (int k = sizeof(&args[0]); k >= 0; k -= 4) {
+                        buffer[j++] = hex[(n >> k) & 0xF];
+                    }
                     break;
                 }
                 case 's': {
@@ -192,7 +200,6 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     Times timeControl(0x70, 0x71);
     globalTimeControl = &timeControl;
     SerialPort serialPort(COM1);
-
     drvManger.ActivateAll(); 
 
     //amd_am79c973* eth0 = (amd_am79c973*)(drvManger.drivers[2]);
@@ -245,7 +252,7 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
         tool1.AddChild(&timeStringText);
 
         String windowsName1 = "Window 1";
-        Window win1(&desktop, 114, 230, 350, 230, 0xFF, 0x00, 0x00, &windowsName1);
+        Window win1(&desktop, 114, 500, 350, 230, 0xFF, 0x00, 0x00, &windowsName1);
         List lit1(&win1, 0, 20, 350, 210, 0xFF, 0x00, 0x00, 0, new String("List 1"));
         for(int driverIndex = 0; driverIndex < drvManger.numDrivers; driverIndex++) {
             lit1.AddItem(new String(drvManger.drivers[driverIndex]->GetDriverName()));
@@ -254,7 +261,7 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
         desktop.AddChild(&win1);
 
         String windowsName2 = "Window 2";
-        Window win2(&desktop, 568, 230, 200, 100, 0x00, 0xAA, 0x00, &windowsName2);
+        Window win2(&desktop, 568, 500, 200, 100, 0x00, 0xAA, 0x00, &windowsName2);
         Button but1(&win2, 20, 30, 80, 30, 0xA8, 0xA8, 0xA8, new String("Button 1"));
         but1.SetOnClick(&TaskA);
         win2.AddChild(&but1);

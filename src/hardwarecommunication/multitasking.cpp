@@ -30,7 +30,8 @@ TaskManager::TaskManager()
     : thisTcb(nullptr),
       nowTask(nullptr),
       status(0),
-      IRQDisableCounter(0) {
+      IRQDisableCounter(0),
+      PostponeTaskSwitchesCounter(0) {
 }
 
 TaskManager::~TaskManager() {}
@@ -96,6 +97,32 @@ void TaskManager::UnLockScheduler(void) {
     #endif
 }
 
+void TaskManager::LockStuff(void) {
+    #ifndef SMP
+    if(nowIntManagerM != nullptr) {
+        nowIntManagerM->Deactivate();
+    }
+    else asm("cli");
+
+    IRQDisableCounter++;
+    PostponeTaskSwitchesCounter++;
+    #endif
+}
+    
+void TaskManager::UnlockStuff(void) {
+    #ifndef SMP
+    PostponeTaskSwitchesCounter--;
+    IRQDisableCounter--;
+
+    if(IRQDisableCounter == 0) {
+        if(nowIntManagerM != nullptr) {
+            nowIntManagerM->Activate();
+        }
+        else asm("sti");
+    }
+    #endif
+}
+
 void TaskManager::BlockTask(int reason) {
     LockScheduler();
     nowTask->taskState = reason;
@@ -103,7 +130,6 @@ void TaskManager::BlockTask(int reason) {
     UnLockScheduler();
 }
 
-//不可用
 void TaskManager::UnblockTask(Task* task) {
     LockScheduler();
     

@@ -62,7 +62,7 @@ kernel.iso: kernel.bin
 
 run: kernel.iso
 	(killall qemu-system-i386 && sleep 1) || true
-	qemu-system-i386 -cdrom $< -boot d -m 512 -nic model=rtl8139 &
+	qemu-system-i386 -cdrom $< -boot d -m 512 -nic model=pcnet &
 
 .PHONY: clean
 clean:

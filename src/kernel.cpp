@@ -33,6 +33,7 @@ using namespace myos::hardwarecommunication;
 #define GMODE2
 
 static String shellText = "";
+TaskManager* TaskManager::nowTaskManager;
 
 void printf(const char* format, ...) {
     char buffer[256];
@@ -133,6 +134,7 @@ void TimeLoop() {
     
         timeString[12] = globalTimeControl->second/10 + 48;
         timeString[13] = globalTimeControl->second%10 + 48;
+        TaskManager::nowTaskManager->NanoSleep(10000000);
     }
 }
 

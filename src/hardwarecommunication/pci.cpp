@@ -117,7 +117,7 @@ Driver* PeripheralComponentInterconnectController::GetDriver(PeripheralComponent
             printf(" 8139");
             driver = (realtek_8139*) MemoryManager::activeMemoryManager->malloc(sizeof(realtek_8139));
             if(driver != 0) {
-                new (driver) realtek_8139(&dev);
+                new (driver) realtek_8139(&dev, interrupts);
             }
             else {
                 printf("instantiation failed");

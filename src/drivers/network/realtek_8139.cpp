@@ -26,14 +26,20 @@ using namespace myos::hardwarecommunication;
 
 void printf(const char*, ...);
 
-realtek_8139::realtek_8139(PeripheralComponentInterconnectDeviceDescriptor* dev) 
+realtek_8139::realtek_8139(PeripheralComponentInterconnectDeviceDescriptor* dev, InterruptManager* interrupts) 
     : Driver(),
+      InterruptHandler(dev->interrupt + interrupts->HardwareInterruptOffset(), interrupts),
+      portBase(dev->portBase),
+      rxBufPort(dev->portBase + 0x30),
+      chipCmdPort(dev->portBase + 0x37),
+      intrMaskPort(dev->portBase + 0x3C),
+      rxConfigPort(dev->portBase + 0x44),
       eepromPort(dev->portBase + 0x50), 
       config1(dev->portBase + 0x52) {
     config1.Write(0x0);
-    int addr_len = ReadEeprom(dev->portBase, 0, 8) == 0x8129 ? 8 : 6;
+    int addr_len = ReadEeprom(portBase, 0, 8) == 0x8129 ? 8 : 6;
     for (int i = 0; i < 3; i++) {
-        ((unsigned short *)(MAC))[i] = ReadEeprom(dev->portBase, i + 7, addr_len);
+        ((unsigned short *)(MAC))[i] = ReadEeprom(portBase, i + 7, addr_len);
     }
     printf("\nMAC address: ");
     for(int i = 0; i < 6; i++) {
@@ -45,6 +51,12 @@ realtek_8139::realtek_8139(PeripheralComponentInterconnectDeviceDescriptor* dev)
 realtek_8139::~realtek_8139() {}
 
 void realtek_8139::Activate() {
+    chipCmdPort.Write(0x10);
+    while( (chipCmdPort.Read() & 0x10) != 0) { }
+    rxBufPort.Write((uint32_t)&recvBufferDescrMemory);
+    intrMaskPort.Write(0x0005);
+    rxConfigPort.Write(0xf);
+    chipCmdPort.Write(0x0C);
 }
 
 const char* realtek_8139::GetDriverName() {
@@ -81,4 +93,7 @@ int realtek_8139::ReadEeprom(long ioaddr, int location, int addr_len) {
     // Terminate the EEPROM access
     eepromPort.Write(~EE_CS);
     return retval;
+}
+
+uint32_t realtek_8139::HandleInterrupt(uint32_t esp) {
 }

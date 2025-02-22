@@ -37,6 +37,7 @@ namespace myos {
             Task* headTask;
             Task* nextTask;
             int taskState;
+            common::uint64_t sleepExpiry;
         };
 
         class TaskManager {
@@ -51,6 +52,9 @@ namespace myos {
             void UnlockStuff(void);
             void BlockTask(int reason);
             void UnblockTask(Task* task);
+            void NanoSleep(common::uint64_t nanoseconds);
+            void NanoSleepUntil(common::uint64_t when);
+            static TaskManager* nowTaskManager;
     
         private:
             Task* thisTcb;
@@ -58,6 +62,8 @@ namespace myos {
             bool status;
             int IRQDisableCounter;
             int PostponeTaskSwitchesCounter;
+            common::uint64_t timeSinceBoot = 0;
+            common::uint64_t timeBetweenTicks = 1000000;  // 1000 Hz = 1 ms between ticks = 1000000 nanoseconds between ticks
         };
     }
 }

@@ -5,6 +5,7 @@ using namespace myos::common;
 using namespace myos::hardwarecommunication;
 using namespace myos;
 void printf(const char*, ...);
+#define SLEEPING 2
 
 Task::Task(GlobalDescriptorTable* gdt, void entrypoint()) {
     cpustate = (CPUState*)(stack + 4096 - sizeof(CPUState));
@@ -22,6 +23,7 @@ Task::Task(GlobalDescriptorTable* gdt, void entrypoint()) {
     cpustate->cs = gdt->CodeSegmentSelector() << 3;
     cpustate->eflags = 0x202;
     taskState = 1;
+    sleepExpiry = 0;
 }
 
 Task::~Task() {}
@@ -32,12 +34,15 @@ TaskManager::TaskManager()
       status(0),
       IRQDisableCounter(0),
       PostponeTaskSwitchesCounter(0) {
+    if(nowTaskManager == nullptr) {
+        nowTaskManager = this;
+    }
 }
 
 TaskManager::~TaskManager() {}
 
 bool TaskManager::AddTask(Task* task) {
-    if(thisTcb == nullptr) {
+    if (thisTcb == nullptr) {
         thisTcb = task;
         thisTcb->nextTask = task;
         thisTcb->headTask = task;
@@ -51,6 +56,8 @@ bool TaskManager::AddTask(Task* task) {
 }
 
 CPUState* TaskManager::Schedule(CPUState* cpustate) {
+    timeSinceBoot += timeBetweenTicks;
+
     if (thisTcb == nullptr) {
         return cpustate;  // 没有任务可调度，返回当前CPU状态
     }
@@ -63,10 +70,22 @@ CPUState* TaskManager::Schedule(CPUState* cpustate) {
 
     // 查找下一个可运行的任务
     Task* startTask = nowTask;
+    Task* runTask = nullptr;
     do {
+        if(nowTask->sleepExpiry <= timeSinceBoot && nowTask->sleepExpiry != 0) {
+            // Task needs to be woken up
+            nowTask->sleepExpiry = 0;
+            UnblockTask(nowTask);
+        }
+        if(runTask == nullptr && nowTask->nextTask->taskState == 1) {
+            runTask = nowTask->nextTask;
+        }
         nowTask = nowTask->nextTask;  // 切换到下一个任务
-    } while (nowTask->taskState != 1 && nowTask != startTask);  // 找到可运行任务或遍历一轮
-
+    } while (nowTask != startTask);  // 找到可运行任务或遍历一轮
+    if (runTask != nullptr) {
+        nowTask = runTask;
+    }
+    
     // 如果所有任务都阻塞，返回当前任务的状态
     if (nowTask->taskState != 1) {
         return cpustate;
@@ -126,7 +145,7 @@ void TaskManager::UnlockStuff(void) {
 void TaskManager::BlockTask(int reason) {
     LockScheduler();
     nowTask->taskState = reason;
-    Schedule(nowTask->cpustate);
+    //Schedule(nowTask->cpustate);
     UnLockScheduler();
 }
 
@@ -135,12 +154,39 @@ void TaskManager::UnblockTask(Task* task) {
     
     task->taskState = 1;
 
-    if (nowTask == nullptr) {
+    /*if (nowTask == nullptr) {
         nowTask = task;
     } else {
         task->nextTask = nowTask->nextTask;
         nowTask->nextTask = task;
-    }
+    }*/
 
     UnLockScheduler();
+}
+
+void TaskManager::NanoSleep(common::uint64_t nanoseconds) {
+    NanoSleepUntil(timeSinceBoot + nanoseconds);
+}
+
+void TaskManager::NanoSleepUntil(common::uint64_t when) {
+    LockStuff();
+
+    // Make sure "when" hasn't already occured
+
+    if(when < timeSinceBoot) {
+        UnLockScheduler();
+        return;
+    }
+
+    // Set time when task should wake up
+
+    nowTask->sleepExpiry = when;
+
+    // Add task to the start of the unsorted list of sleeping tasks
+
+    UnlockStuff();
+
+    // Find something else for the CPU to do
+
+    BlockTask(SLEEPING);
 }

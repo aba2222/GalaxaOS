@@ -1,6 +1,8 @@
 #ifndef __MYOS__COMMON__TYPES_H
 #define __MYOS__COMMON__TYPES_H
 
+#define NULL nullptr
+
 namespace myos {
     namespace common {
         typedef char int8_t;
@@ -17,6 +19,7 @@ namespace myos {
 
         typedef const char* string;
         typedef uint32_t size_t;
+        typedef size_t uintptr_t;
 
         struct vbe_mode_info_structure {
             uint16_t attributes;		// deprecated, only bit 7 should be of interest to you, and it indicates the mode supports a linear frame buffer.

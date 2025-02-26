@@ -1,11 +1,14 @@
 #include "hardwarecommunication/multitasking.h"
 #include "hardwarecommunication/interrupts.h"
+#include "memorymanager.h"
 
 using namespace myos::common;
 using namespace myos::hardwarecommunication;
 using namespace myos;
 void printf(const char*, ...);
 #define SLEEPING 2
+#define PAUSED 3
+#define TERMINATED 4
 
 Task::Task(GlobalDescriptorTable* gdt, void entrypoint()) {
     cpustate = (CPUState*)(stack + 4096 - sizeof(CPUState));
@@ -28,12 +31,14 @@ Task::Task(GlobalDescriptorTable* gdt, void entrypoint()) {
 
 Task::~Task() {}
 
-TaskManager::TaskManager() 
+TaskManager::TaskManager(GlobalDescriptorTable* gdt) 
     : thisTcb(nullptr),
       nowTask(nullptr),
       status(0),
       IRQDisableCounter(0),
-      PostponeTaskSwitchesCounter(0) {
+      PostponeTaskSwitchesCounter(0),
+      cleanerTaskCreated(0),
+      cleanerTask(new Task(gdt, CleanerTask)) {
     if(nowTaskManager == nullptr) {
         nowTaskManager = this;
     }
@@ -164,6 +169,51 @@ void TaskManager::UnblockTask(Task* task) {
     UnLockScheduler();
 }
 
+void TaskManager::TerminateTask() {
+    // Note: Can do any harmless stuff here (close files, free memory in user-space, ...) but there's none of that yet
+    LockStuff();
+
+    // Put this task on the terminated task list
+    /*LockScheduler();
+    current_task_TCB->next = terminated_task_list;
+    terminated_task_list = current_task_TCB;
+    UnLockScheduler();*/
+    
+    // Block this task (note: task switch will be postponed until scheduler lock is released)
+    BlockTask(TERMINATED);
+    
+    // Make sure the cleaner task isn't paused
+    if(cleanerTaskCreated) {
+        UnblockTask(cleanerTask);
+    } else {
+        AddTask(cleanerTask);
+        cleanerTaskCreated = 1;
+    }
+    
+    // Unlock the scheduler's lock 
+    UnlockStuff();
+}
+
+void TaskManager::CleanerTask() {
+    TaskManager::nowTaskManager->LockStuff();
+
+    Task* task = TaskManager::nowTaskManager->nowTask;
+    Task* startTask = task;
+    do {
+        if(task->taskState == TERMINATED) {
+            task->headTask->nextTask = task->nextTask;
+            task->nextTask->headTask = task->headTask;
+
+            MemoryManager::activeMemoryManager->free(task);
+        }
+        task = task->nextTask;  // 切换到下一个任务
+    } while (task != startTask);  // 找到可运行任务或遍历一轮
+
+    TaskManager::nowTaskManager->BlockTask(PAUSED);
+    TaskManager::nowTaskManager->UnlockStuff();
+}
+
+
 void TaskManager::NanoSleep(common::uint64_t nanoseconds) {
     NanoSleepUntil(timeSinceBoot + nanoseconds);
 }
@@ -172,21 +222,17 @@ void TaskManager::NanoSleepUntil(common::uint64_t when) {
     LockStuff();
 
     // Make sure "when" hasn't already occured
-
     if(when < timeSinceBoot) {
         UnLockScheduler();
         return;
     }
 
     // Set time when task should wake up
-
     nowTask->sleepExpiry = when;
 
     // Add task to the start of the unsorted list of sleeping tasks
-
     UnlockStuff();
 
     // Find something else for the CPU to do
-
     BlockTask(SLEEPING);
 }

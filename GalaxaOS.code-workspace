@@ -6,9 +6,12 @@
 	],
 	"settings": {
 		"files.associations": {
+			"*.asm": "asm-intel-x86-generic",
+			"*.s": "assembly",
 			"errno.h": "c",
 			"fcntl.h": "c",
-			"cstdint": "cpp"
+			"cstdint": "cpp",
+			"liballoc_1_1.h": "c"
 		}
 	}
 }

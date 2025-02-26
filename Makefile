@@ -8,6 +8,8 @@ objects = obj/loader.o \
 		  obj/gdt.o \
 		  obj/memorymanager.o \
 		  obj/syscalls.o \
+		  obj/memory/liballoc_1_1.o \
+		  obj/memory/liballoc_hooks.o \
 		  obj/hardwarecommunication/interrupts.o \
 		  obj/hardwarecommunication/interruptstubs.o \
 		  obj/hardwarecommunication/pci.o \
@@ -37,6 +39,10 @@ objects = obj/loader.o \
 		  obj/filesystem/fat.o \
 
 obj/%.o: src/%.cpp
+	mkdir -p $(@D)
+	g++ ${GPPARAMS} -o $@ -c $<
+
+obj/%.o: src/%.c
 	mkdir -p $(@D)
 	g++ ${GPPARAMS} -o $@ -c $<
 

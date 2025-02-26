@@ -42,7 +42,7 @@ namespace myos {
 
         class TaskManager {
         public:
-            TaskManager();
+            TaskManager(GlobalDescriptorTable* gdt);
             ~TaskManager();
             bool AddTask(Task* task);
             CPUState* Schedule(CPUState* cpustate);
@@ -52,13 +52,17 @@ namespace myos {
             void UnlockStuff(void);
             void BlockTask(int reason);
             void UnblockTask(Task* task);
+            void TerminateTask();
             void NanoSleep(common::uint64_t nanoseconds);
             void NanoSleepUntil(common::uint64_t when);
+            static void CleanerTask();
             static TaskManager* nowTaskManager;
     
         private:
             Task* thisTcb;
             Task* nowTask;
+            Task* cleanerTask;
+            bool cleanerTaskCreated;
             bool status;
             int IRQDisableCounter;
             int PostponeTaskSwitchesCounter;

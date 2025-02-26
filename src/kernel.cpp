@@ -51,10 +51,20 @@ void printf(const char* format, ...) {
                 }
                 case 'x': {
                     char* hex = "0123456789ABCDEF";
-                    int n = args[0];
+                    int n = *args;
                     args++;
-                    for (int k = sizeof(&args[0]); k >= 0; k -= 4) {
-                        buffer[j++] = hex[(n >> k) & 0xF];
+                    if (n == 0) {
+                        buffer[j++] = '0';
+                    } else {
+                        char temp[8];
+                        int k = 0;
+                        while (n) {
+                            temp[k++] = hex[n & 0xF];
+                            n >>= 4;
+                        }
+                        while (k > 0) {
+                            buffer[j++] = temp[--k];
+                        }
                     }
                     break;
                 }
@@ -145,18 +155,19 @@ void TaskA() {
 extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magicnumber){
     GlobalDescriptorTable gdt;
 
-    TaskManager taskmanager;
     //mmanager
-    size_t heap = 10 * 1024 * 1024;
+    size_t heap = 64 * 1024 * 1024;
     uint32_t* memupper = (uint32_t*)((size_t)multiboot_structure + 8);
 
     MemoryManager memoryManager(heap, (*memupper) * 1024 - heap - 10 * 1024);
+
+    TaskManager taskmanager(&gdt);
 
     printf("GalaxaOS 0.0.1\n");
     printf("vbe_mode_info->width: %d\n", multiboot_structure->vbe_mode_info->width);
     printf("vbe_mode_info->height: %d\n", multiboot_structure->vbe_mode_info->height);
     printf("memupper: %d ", *memupper);
-    printf("heap: %d", heap);
+    printf("heap: %d MiB", heap / 1024 / 1024);
 
     printf("\n-----init1-----\n");
 
@@ -273,10 +284,10 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
     serialPort.WriteSerial('a');serialPort.WriteSerial('x');serialPort.WriteSerial('a');
     serialPort.WriteSerial('O');serialPort.WriteSerial('S');
 
-    Task redrawTask(&gdt, RedrawDesktop);
-    taskmanager.AddTask(&redrawTask);
-    Task timeLoopTask(&gdt, TimeLoop);
-    taskmanager.AddTask(&timeLoopTask);
+    Task* redrawTask = new Task(&gdt, RedrawDesktop);
+    taskmanager.AddTask(redrawTask);
+    Task* timeLoopTask = new Task(&gdt, TimeLoop);
+    taskmanager.AddTask(timeLoopTask);
     while (true) {
     }
 }

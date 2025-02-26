@@ -68,9 +68,9 @@ void PeripheralComponentInterconnectController::SelectDrivers(DriverManger* driv
 
                 printf(", FUNCTION %d", function);
 
-                printf(" = VENDOR %d", dev.vendor_id);
+                printf(" = VENDOR 0x%x", dev.vendor_id);
 
-                printf(", DEVICE %d", dev.device_id);
+                printf(", DEVICE 0x%x", dev.device_id);
                 for (uint8_t barNum = 0; barNum < 6; barNum++) {
                     BaseAddressRegister bar = GetBaseAddressRegister(bus, device, function, barNum);
                     if(barNum == 0) {

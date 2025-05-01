@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include "common/types.h"
 #include "gdt.h"
 #include "memorymanager.h"

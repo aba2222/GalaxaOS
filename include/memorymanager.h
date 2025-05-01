@@ -1,40 +1,40 @@
 #ifndef __MEMORYMANAGER_H
 #define __MEMORYMANAGER_H
 
-#include "common/types.h"
+#include <stdint.h>
 
 namespace myos {
     struct MemoryChunk {
         MemoryChunk* next;
         MemoryChunk* prev;
         bool allocated;
-        common::size_t size;
+        size_t size;
     };
 
     class MemoryManager {
     public:
-        MemoryManager(common::size_t start, common::size_t size);
+        MemoryManager(size_t start, size_t size);
         ~MemoryManager();
 
-        void* malloc(common::size_t size);
+        void* malloc(size_t size);
         void free(void* ptr);
 
         static MemoryManager* activeMemoryManager;
     private:
         MemoryChunk* first;
     };
-    void *memcpy(void * _dest, void *_src, common::uint32_t _n);
+    void *memcpy(void * _dest, void *_src, uint32_t _n);
 }
 
-void* operator new(myos::common::size_t size);
-void* operator new[](myos::common::size_t size);
+void* operator new(size_t size);
+void* operator new[](size_t size);
 
-void* operator new(myos::common::size_t size, void* ptr);
-void* operator new[](myos::common::size_t size, void* ptr);
+void* operator new(size_t size, void* ptr);
+void* operator new[](size_t size, void* ptr);
 
 void operator delete(void* ptr);
-void operator delete(void* ptr, myos::common::size_t);
+void operator delete(void* ptr, size_t);
 void operator delete[](void* ptr);
-void operator delete[](void* ptr, myos::common::size_t);
+void operator delete[](void* ptr, size_t);
 
 #endif

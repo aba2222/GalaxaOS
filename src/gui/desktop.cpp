@@ -52,11 +52,11 @@ void Desktop::Draw() {
 }
 
             
-void Desktop::OnMouseDown(myos::common::uint8_t button) {
+void Desktop::OnMouseDown(uint8_t button) {
     CompositeWidget::OnMouseDown(MouseX, MouseY, button);
 }
 
-void Desktop::OnMouseUp(myos::common::uint8_t button) {
+void Desktop::OnMouseUp(uint8_t button) {
     CompositeWidget::OnMouseUp(MouseX, MouseY, button);
 }
 

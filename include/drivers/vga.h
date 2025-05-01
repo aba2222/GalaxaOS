@@ -1,6 +1,7 @@
 #ifndef __MYOS__DRIVERS__VGA_H
 #define __MYOS__DRIVERS__VGA_H
 
+#include <stdint.h>
 #include "common/types.h"
 #include "hardwarecommunication/port.h"
 #include "drivers/driver.h"
@@ -13,13 +14,13 @@ namespace myos {
             VideoGraphicsArray();
             ~VideoGraphicsArray();
 
-            bool SupportsMode(common::uint32_t width, common::uint32_t height, common::uint32_t colordepth);
-            bool SetMode(common::uint32_t width, common::uint32_t height, common::uint32_t colordepth);
-            void PutPixel(common::uint32_t x, common::uint32_t y, common::uint8_t r, common::uint8_t g, common::uint8_t b);
-            void PutPixel(common::uint32_t x, common::uint32_t y, common::uint8_t colorindex);
+            bool SupportsMode(uint32_t width, uint32_t height, uint32_t colordepth);
+            bool SetMode(uint32_t width, uint32_t height, uint32_t colordepth);
+            void PutPixel(uint32_t x, uint32_t y, uint8_t r, uint8_t g, uint8_t b);
+            void PutPixel(uint32_t x, uint32_t y, uint8_t colorindex);
 
-            void FillRectangle(common::uint32_t x, common::uint32_t y, common::uint32_t w, common::uint32_t h, common::uint8_t r,
-                                common::uint8_t g, common::uint8_t b);
+            void FillRectangle(uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint8_t r,
+                                uint8_t g, uint8_t b);
 
             void Redraw();
         private:
@@ -36,11 +37,11 @@ namespace myos {
             hardwarecommunication::Port8Bit attributeControllerResetPort;
 
 
-            void WriteRegisters(common::uint8_t* registers);
-            common::uint8_t GetColorIndex(common::uint8_t r, common::uint8_t g, common::uint8_t b);
-            common::uint8_t* GetFrameBufferSegment();
+            void WriteRegisters(uint8_t* registers);
+            uint8_t GetColorIndex(uint8_t r, uint8_t g, uint8_t b);
+            uint8_t* GetFrameBufferSegment();
 
-            common::uint8_t videoBuffer[320 * 200 * 8];
+            uint8_t videoBuffer[320 * 200 * 8];
         };
     }
 }

@@ -1,7 +1,6 @@
 #include "memorymanager.h"
 
 using namespace myos;
-using namespace myos::common;
 
 MemoryManager* MemoryManager::activeMemoryManager = 0;
 

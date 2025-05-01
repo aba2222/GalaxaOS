@@ -1,8 +1,7 @@
 #include "hardwarecommunication/times.h"
-using namespace myos::common;
 using namespace myos::hardwarecommunication;
 
-Times::Times(common::uint8_t cmos_address, common::uint8_t cmos_data) 
+Times::Times(uint8_t cmos_address, uint8_t cmos_data) 
       : CMOSAddress(cmos_address),
         CMOSData(cmos_data),
 		century_register(0) {}

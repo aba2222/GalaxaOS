@@ -7,14 +7,14 @@ namespace myos {
     namespace hardwarecommunication {
         class MMIOUtils {
             public:
-                static common::uint8_t read8 (common::uint64_t p_address);
-                static common::uint16_t read16 (common::uint64_t p_address);
-                static common::uint32_t read32 (common::uint64_t p_address);
-                static common::uint64_t read64 (common::uint64_t p_address);
-                static void write8 (common::uint64_t p_address, common::uint8_t p_value);
-                static void write16 (common::uint64_t p_address, common::uint16_t p_value);
-                static void write32 (common::uint64_t p_address, common::uint32_t p_value);
-                static void write64 (common::uint64_t p_address, common::uint64_t p_value);
+                static uint8_t read8 (uint64_t p_address);
+                static uint16_t read16 (uint64_t p_address);
+                static uint32_t read32 (uint64_t p_address);
+                static uint64_t read64 (uint64_t p_address);
+                static void write8 (uint64_t p_address, uint8_t p_value);
+                static void write16 (uint64_t p_address, uint16_t p_value);
+                static void write32 (uint64_t p_address, uint32_t p_value);
+                static void write64 (uint64_t p_address, uint64_t p_value);
         };
     }
 }

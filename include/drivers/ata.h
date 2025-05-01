@@ -1,7 +1,7 @@
 #ifndef __MYOS__DRIVERS__ATA_H
 #define __MYOS__DRIVERS__ATA_H
 
-#include "common/types.h"
+#include <stdint.h>
 #include "hardwarecommunication/interrupts.h"
 #include "hardwarecommunication/port.h"
 
@@ -9,12 +9,12 @@ namespace myos {
     namespace drivers {
         class AdvancedTechnologyAttachment {
         public:
-            AdvancedTechnologyAttachment(bool master, common::uint16_t portBase);
+            AdvancedTechnologyAttachment(bool master, uint16_t portBase);
             ~AdvancedTechnologyAttachment();
             
             void Identify();
-            void Read28(common::uint32_t sectorNum, common::uint8_t* readFor, int count = 512);
-            void Write28(common::uint32_t sectorNum, common::uint8_t* data, common::uint32_t count);
+            void Read28(uint32_t sectorNum, uint8_t* readFor, int count = 512);
+            void Write28(uint32_t sectorNum, uint8_t* data, uint32_t count);
             void Flush();
             
         protected:

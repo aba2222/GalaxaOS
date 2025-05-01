@@ -19,15 +19,15 @@ namespace myos {
             const virtual char* GetDriverName();
         private:
             bool eerpromExists;
-            common::uint8_t bar_type;
-            common::uint64_t mem_base;
-            common::uint8_t mac [6];
+            uint8_t bar_type;
+            uint64_t mem_base;
+            uint8_t mac [6];
             hardwarecommunication::Port32Bit dataPort;
 
-            common::uint32_t ReadCommand(common::uint16_t p_address);
-            void WriteCommand(common::uint16_t p_address, common::uint32_t p_value);
+            uint32_t ReadCommand(uint16_t p_address);
+            void WriteCommand(uint16_t p_address, uint32_t p_value);
             bool detectEEProm();
-            common::uint32_t eepromRead(common::uint8_t addr);
+            uint32_t eepromRead(uint8_t addr);
             bool ReadMACAddress();
             
         };

@@ -1,6 +1,7 @@
 #ifndef __MYOS__GUI__DESKTOP_H
 #define __MYOS__GUI__DESKTOP_H
 
+#include <stdint.h>
 #include "gui/widget.h"
 #include "gui/window.h"
 #include "gui/stringtext.h"
@@ -11,13 +12,13 @@ namespace myos {
     namespace gui {
         class Desktop : public CompositeWidget, public drivers::MouseEventHandler, public drivers::KeyBoardEventHandler {
         public:
-            Desktop(common::uint32_t w, common::uint32_t h, common::uint8_t r,
-                    common::uint8_t g, common::uint8_t b, common::SuperGraphicsContext* gc, common::String* shellText);
+            Desktop(uint32_t w, uint32_t h, uint8_t r,
+                    uint8_t g, uint8_t b, common::SuperGraphicsContext* gc, common::String* shellText);
             ~Desktop();
             
-            void OnMouseDown(common::uint8_t button);
-            void OnMouseUp(common::uint8_t button);
-            void OnMouseMove(common::int8_t x, common::int8_t y);
+            void OnMouseDown(uint8_t button);
+            void OnMouseUp(uint8_t button);
+            void OnMouseMove(int8_t x, int8_t y);
 
             void Draw();
 
@@ -25,8 +26,8 @@ namespace myos {
             void OnKeyUp(char);
             
         protected:
-            common::uint32_t MouseX;
-            common::uint32_t MouseY;
+            uint32_t MouseX;
+            uint32_t MouseY;
             common::SuperGraphicsContext* gc;
 
             StringText shellGfx;

@@ -8,8 +8,6 @@ objects = obj/loader.o \
 		  obj/gdt.o \
 		  obj/memorymanager.o \
 		  obj/syscalls.o \
-		  obj/memory/liballoc_1_1.o \
-		  obj/memory/liballoc_hooks.o \
 		  obj/hardwarecommunication/interrupts.o \
 		  obj/hardwarecommunication/interruptstubs.o \
 		  obj/hardwarecommunication/pci.o \

@@ -1,12 +1,11 @@
 #include <drivers/ata.h>
 
 using namespace myos;
-using namespace myos::common;
 using namespace myos::drivers;
 
 void printf(const char*, ...);
 
-AdvancedTechnologyAttachment::AdvancedTechnologyAttachment(bool master, common::uint16_t portBase)
+AdvancedTechnologyAttachment::AdvancedTechnologyAttachment(bool master, uint16_t portBase)
                             :   dataPort(portBase),
                                 errorPort(portBase + 0x1),
                                 sectorCountPort(portBase + 0x2),
@@ -63,7 +62,7 @@ void AdvancedTechnologyAttachment::Identify() {
     printf("\n");
 }
 
-void AdvancedTechnologyAttachment::Read28(common::uint32_t sectorNum, uint8_t* readFor, int count) {
+void AdvancedTechnologyAttachment::Read28(uint32_t sectorNum, uint8_t* readFor, int count) {
     if(sectorNum > 0x0FFFFFFF) {
         return;
     }
@@ -113,7 +112,7 @@ void AdvancedTechnologyAttachment::Read28(common::uint32_t sectorNum, uint8_t* r
     }
 }
 
-void AdvancedTechnologyAttachment::Write28(common::uint32_t sectorNum, common::uint8_t* data, common::uint32_t count) {
+void AdvancedTechnologyAttachment::Write28(uint32_t sectorNum, uint8_t* data, uint32_t count) {
     if(sectorNum > 0x0FFFFFFF) return;
     if(count > 512) return;
     

@@ -1,7 +1,6 @@
 #include "gdt.h"
 
 using namespace myos;
-using namespace myos::common;
 
 GlobalDescriptorTable::GlobalDescriptorTable()
     : nullSegmentDescriptor(0, 0, 0),

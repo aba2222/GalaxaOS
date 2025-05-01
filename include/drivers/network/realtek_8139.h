@@ -14,15 +14,15 @@ namespace myos {
                          hardwarecommunication::InterruptManager* interrupts);
             ~realtek_8139();
             int ReadEeprom(long ioaddr, int location, int addr_len);
-            common::uint32_t HandleInterrupt(common::uint32_t esp);
+            uint32_t HandleInterrupt(uint32_t esp);
 
             void Activate();
             const char* GetDriverName();
         private:
 
-            common::uint32_t portBase;
-            common::uint8_t MAC[6];
-            common::uint8_t recvBufferDescrMemory[8192 + 16];
+            uint32_t portBase;
+            uint8_t MAC[6];
+            uint8_t recvBufferDescrMemory[8192 + 16];
             hardwarecommunication::Port32Bit rxBufPort;
             hardwarecommunication::Port8Bit chipCmdPort;
             hardwarecommunication::Port16Bit intrMaskPort;

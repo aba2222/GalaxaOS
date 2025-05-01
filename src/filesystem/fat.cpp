@@ -6,7 +6,7 @@ using namespace myos::filesystem;
 
 void printf(const char*, ...);
 
-FatPartition::FatPartition(drivers::AdvancedTechnologyAttachment* atah, common::uint32_t partitionOffset) 
+FatPartition::FatPartition(drivers::AdvancedTechnologyAttachment* atah, uint32_t partitionOffset) 
             : hd(atah), 
               partitionOffset(partitionOffset) {
     //ReadBiosBlock

@@ -1,7 +1,7 @@
 #ifndef __MYOS__HARDWARECOMMUNICATION__SOUND_H
 #define __MYOS__HARDWARECOMMUNICATION__SOUND_H
 
-#include "common/types.h"
+#include <stdint.h>
 #include "hardwarecommunication/port.h"
 
 namespace myos {
@@ -11,7 +11,7 @@ namespace myos {
             Sounds();
             ~Sounds();
             
-            void play_sound(common::uint32_t nFrequence);
+            void play_sound(uint32_t nFrequence);
 
         private:
             Port8Bit p61;

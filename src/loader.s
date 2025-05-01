@@ -12,8 +12,8 @@
 
   # Video mode
   .long   0       # Linear graphics please?(yes=0 no=1)
-  .long   1024       # Preferred width
-  .long   768       # Preferred height
+  .long   1280       # Preferred width
+  .long   800       # Preferred height
   .long   32      # Preferred pixel depth
 
 .section .text

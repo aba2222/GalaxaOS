@@ -214,11 +214,11 @@ void TaskManager::CleanerTask() {
 }
 
 
-void TaskManager::NanoSleep(common::uint64_t nanoseconds) {
+void TaskManager::NanoSleep(uint64_t nanoseconds) {
     NanoSleepUntil(timeSinceBoot + nanoseconds);
 }
 
-void TaskManager::NanoSleepUntil(common::uint64_t when) {
+void TaskManager::NanoSleepUntil(uint64_t when) {
     LockStuff();
 
     // Make sure "when" hasn't already occured

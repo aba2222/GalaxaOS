@@ -1,26 +1,10 @@
 #ifndef __MYOS__COMMON__TYPES_H
 #define __MYOS__COMMON__TYPES_H
 
-#define NULL nullptr
+#include <stdint.h>
 
 namespace myos {
     namespace common {
-        typedef char int8_t;
-        typedef unsigned char uint8_t;
-
-        typedef short int16_t;
-        typedef unsigned short uint16_t;
-
-        typedef int int32_t;
-        typedef unsigned int uint32_t;
-
-        typedef long long int64_t;
-        typedef unsigned long long uint64_t;
-
-        typedef const char* string;
-        typedef uint32_t size_t;
-        typedef size_t uintptr_t;
-
         struct vbe_mode_info_structure {
             uint16_t attributes;		// deprecated, only bit 7 should be of interest to you, and it indicates the mode supports a linear frame buffer.
             uint8_t window_a;			// deprecated

@@ -1,13 +1,12 @@
 #include "gui/widget.h"
 
-using namespace myos::common;
 using namespace myos::gui;
 
 void printf(const char*, ...);
 
 Widget::Widget(Widget* parent, int32_t x, int32_t y,
         uint32_t w, uint32_t h, uint8_t r,
-        uint8_t g, uint8_t b, uint8_t classNum, String* stringText) 
+        uint8_t g, uint8_t b, uint8_t classNum, myos::common::String* stringText) 
         : parent(parent),
           x(x),
           y(y),
@@ -33,7 +32,7 @@ void Widget::ModelToScreen(int32_t &toX, int32_t &toY) {
     toY += this->y;
 }
 
-void Widget::Draw(SuperGraphicsContext* gc) {
+void Widget::Draw(myos::common::SuperGraphicsContext* gc) {
     int X=0;
     int Y=0;
     ModelToScreen(X, Y);
@@ -80,7 +79,7 @@ bool Widget::ContainsCoordinate(int32_t x, int32_t y) {
 
 CompositeWidget::CompositeWidget(Widget* parent, int32_t x, int32_t y,
             uint32_t w, uint32_t h, uint8_t r,
-            uint8_t g, uint8_t b, uint8_t classNum, String* stringText) 
+            uint8_t g, uint8_t b, uint8_t classNum, myos::common::String* stringText) 
             : Widget(parent, x, y, w, h, r, g, b, classNum, stringText),
               focussedChild(0),
               numChildren(0) {
@@ -97,7 +96,7 @@ bool CompositeWidget::AddChild(Widget* child) {
 
 //void CompositeWidget::ModelToScreen(int32_t &x, int32_t &y) {}
 
-void CompositeWidget::Draw(SuperGraphicsContext* gc) {
+void CompositeWidget::Draw(myos::common::SuperGraphicsContext* gc) {
     Widget::Draw(gc);
     for(int i = 0; i < numChildren; i++) {
         children[i]->Draw(gc);
@@ -112,7 +111,7 @@ void CompositeWidget::GetFocus(Widget* widget) {
     }
 }
 
-void CompositeWidget::OnMouseDown(int32_t x, int32_t y, common::uint8_t button) {
+void CompositeWidget::OnMouseDown(int32_t x, int32_t y, uint8_t button) {
     for(int i = numChildren - 1; i >= 0; i--) {
         if(children[i]->ContainsCoordinate(x - this->x, y - this->y)) {
             children[i]->OnMouseDown(x - this->x, y - this->y, button);
@@ -122,7 +121,7 @@ void CompositeWidget::OnMouseDown(int32_t x, int32_t y, common::uint8_t button) 
     }
 }
 
-void CompositeWidget::OnMouseUp(int32_t x, int32_t y, common::uint8_t button) {
+void CompositeWidget::OnMouseUp(int32_t x, int32_t y, uint8_t button) {
     for(int i = 0; i < numChildren; i++) {
         //if(children[i]->ContainsCoordinate(x - this->x, y - this->y)) {
             children[i]->OnMouseUp(x - this->x, y - this->y, button);

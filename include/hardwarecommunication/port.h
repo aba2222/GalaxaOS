@@ -1,75 +1,75 @@
 #ifndef __MYOS__HARDWARECOMMUNICATION__PORT_H
 #define __MYOS__HARDWARECOMMUNICATION__PORT_H
 
-#include "common/types.h"
+#include <stdint.h>
 
 namespace myos {
     namespace hardwarecommunication {
         class Port {
         protected:
-            myos::common::uint16_t portnumber;
-            Port(myos::common::uint16_t portnumber);
+            uint16_t portnumber;
+            Port(uint16_t portnumber);
             ~Port();
         };
 
         class Port8Bit : public Port {
         public:
-            Port8Bit(myos::common::uint16_t portnumber);
+            Port8Bit(uint16_t portnumber);
             ~Port8Bit();
-            void Write(myos::common::uint8_t data, myos::common::uint8_t offset = 0);
-            virtual myos::common::uint8_t Read(myos::common::uint8_t offset = 0);
+            void Write(uint8_t data, uint8_t offset = 0);
+            virtual uint8_t Read(uint8_t offset = 0);
         protected:
-            static inline myos::common::uint8_t Read8(myos::common::uint16_t _port) {
-                myos::common::uint8_t result;
+            static inline uint8_t Read8(uint16_t _port) {
+                uint8_t result;
                 __asm__ volatile("inb %1, %0" : "=a" (result) : "Nd" (_port));
                 return result;
             }
-            static inline void Write8(myos::common::uint16_t _port, myos::common::uint8_t _data){
+            static inline void Write8(uint16_t _port, uint8_t _data){
                 __asm__ volatile("outb %0, %1" : : "a" (_data), "Nd" (_port));
             }
         };
 
         class Port8BitSlow : public Port8Bit {
         public:
-            Port8BitSlow(myos::common::uint16_t portnumber);
+            Port8BitSlow(uint16_t portnumber);
             ~Port8BitSlow();
-            virtual void Write(myos::common::uint8_t data, myos::common::uint8_t offset = 0);
+            virtual void Write(uint8_t data, uint8_t offset = 0);
         protected:
-            static inline void Write8Slow(myos::common::uint16_t _port, myos::common::uint8_t _data){
+            static inline void Write8Slow(uint16_t _port, uint8_t _data){
                 __asm__ volatile("outb %0, %1\njmp 1f\n1: jmp 1f\n1:" : : "a" (_data), "Nd" (_port));
             }
         };
 
         class Port16Bit : public Port {
         public:
-            Port16Bit(myos::common::uint16_t portnumber);
+            Port16Bit(uint16_t portnumber);
             ~Port16Bit();
-            virtual void Write(myos::common::uint16_t data, myos::common::uint8_t offset = 0);
-            virtual myos::common::uint16_t Read(myos::common::uint8_t offset = 0);
+            virtual void Write(uint16_t data, uint8_t offset = 0);
+            virtual uint16_t Read(uint8_t offset = 0);
         protected:
-            static inline myos::common::uint16_t Read16(myos::common::uint16_t _port) {
-                myos::common::uint16_t result;
+            static inline uint16_t Read16(uint16_t _port) {
+                uint16_t result;
                 __asm__ volatile("inw %1, %0" : "=a" (result) : "Nd" (_port));
                 return result;
             }
-            static inline void Write16(myos::common::uint16_t _port, myos::common::uint16_t _data){
+            static inline void Write16(uint16_t _port, uint16_t _data){
                 __asm__ volatile("outw %0, %1" : : "a" (_data), "Nd" (_port));
             }
         };
 
         class Port32Bit : public Port {
         public:
-            Port32Bit(myos::common::uint16_t portnumber);
+            Port32Bit(uint16_t portnumber);
             ~Port32Bit();
-            virtual void Write(myos::common::uint32_t data, myos::common::uint8_t offset = 0);
-            virtual myos::common::uint32_t Read(myos::common::uint8_t offset = 0);
+            virtual void Write(uint32_t data, uint8_t offset = 0);
+            virtual uint32_t Read(uint8_t offset = 0);
         protected:
-            static inline myos::common::uint32_t Read32(myos::common::uint16_t _port) {
-                myos::common::uint32_t result;
+            static inline uint32_t Read32(uint16_t _port) {
+                uint32_t result;
                 __asm__ volatile("inl %1, %0" : "=a" (result) : "Nd" (_port));
                 return result;
             }
-            static inline void Write32(myos::common::uint16_t _port, myos::common::uint32_t _data){
+            static inline void Write32(uint16_t _port, uint32_t _data){
                 __asm__ volatile("outl %0, %1" : : "a" (_data), "Nd" (_port));
             }
         };

@@ -1,28 +1,28 @@
 #ifndef __MULTITASKING_H
 #define __MULTITASKING_H
 
-#include "common/types.h"
+#include <stdint.h>
 #include "gdt.h"
 
 namespace myos {
     namespace hardwarecommunication {
         struct CPUState {
-            common::uint32_t eax;
-            common::uint32_t ebx;
-            common::uint32_t ecx;
-            common::uint32_t edx;
+            uint32_t eax;
+            uint32_t ebx;
+            uint32_t ecx;
+            uint32_t edx;
 
-            common::uint32_t esi;
-            common::uint32_t edi;
-            common::uint32_t ebp;
+            uint32_t esi;
+            uint32_t edi;
+            uint32_t ebp;
 
-            common::uint32_t error;
+            uint32_t error;
 
-            common::uint32_t eip;
-            common::uint32_t cs;
-            common::uint32_t eflags;
-            common::uint32_t esp;
-            common::uint32_t ss;
+            uint32_t eip;
+            uint32_t cs;
+            uint32_t eflags;
+            uint32_t esp;
+            uint32_t ss;
         } __attribute__((packed));
 
         class Task {
@@ -32,12 +32,12 @@ namespace myos {
             ~Task();
             
         private:
-            common::uint8_t stack[4096];
+            uint8_t stack[4096];
             CPUState* cpustate;
             Task* headTask;
             Task* nextTask;
             int taskState;
-            common::uint64_t sleepExpiry;
+            uint64_t sleepExpiry;
         };
 
         class TaskManager {
@@ -53,8 +53,8 @@ namespace myos {
             void BlockTask(int reason);
             void UnblockTask(Task* task);
             void TerminateTask();
-            void NanoSleep(common::uint64_t nanoseconds);
-            void NanoSleepUntil(common::uint64_t when);
+            void NanoSleep(uint64_t nanoseconds);
+            void NanoSleepUntil(uint64_t when);
             static void CleanerTask();
             static TaskManager* nowTaskManager;
     
@@ -66,8 +66,8 @@ namespace myos {
             bool status;
             int IRQDisableCounter;
             int PostponeTaskSwitchesCounter;
-            common::uint64_t timeSinceBoot = 0;
-            common::uint64_t timeBetweenTicks = 1000000;  // 1000 Hz = 1 ms between ticks = 1000000 nanoseconds between ticks
+            uint64_t timeSinceBoot = 0;
+            uint64_t timeBetweenTicks = 1000000;  // 1000 Hz = 1 ms between ticks = 1000000 nanoseconds between ticks
         };
     }
 }

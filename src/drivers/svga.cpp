@@ -220,8 +220,8 @@ void SuperVideoGraphicsArray::PutChar(
     }
 }
 
-void SuperVideoGraphicsArray::PutString(const common::uint8_t* c, common::uint32_t cx, common::uint32_t cy, 
-                                        common::uint32_t fg, common::uint32_t bg, common::uint16_t w) {
+void SuperVideoGraphicsArray::PutString(const uint8_t* c, uint32_t cx, uint32_t cy, 
+                                        uint32_t fg, uint32_t bg, uint16_t w) {
     int ax = cx;
     //int ay = cy;
     for(int i = 0;(i <= 65535) && (c[i] != '\0'); i++) {
@@ -240,8 +240,8 @@ void SuperVideoGraphicsArray::PutString(const common::uint8_t* c, common::uint32
     }
 }
 
-void SuperVideoGraphicsArray::PutString(const common::String c, common::uint32_t cx, common::uint32_t cy, 
-                                        common::uint32_t fg, common::uint32_t bg, common::uint16_t w) {
+void SuperVideoGraphicsArray::PutString(const common::String c, uint32_t cx, uint32_t cy, 
+                                        uint32_t fg, uint32_t bg, uint16_t w) {
     int ax = cx;
     //int ay = cy;
     for(int i = 0;(i <= 65535) && (c[i] != '\0'); i++) {

@@ -1,5 +1,4 @@
 #include "hardwarecommunication/sound.h"
-using namespace myos::common;
 using namespace myos::hardwarecommunication;
 
 Sounds::Sounds() 

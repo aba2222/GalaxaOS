@@ -1,7 +1,8 @@
 #ifndef __MYOS__DRIVERS__SVGA_H
 #define __MYOS__DRIVERS__SVGA_H
 
-#include "common/types.h"
+#include <stdint.h>
+#include <string.h>
 #include "hardwarecommunication/port.h"
 #include "memorymanager.h"
 #include "gui/psf.h"
@@ -26,7 +27,7 @@ namespace myos {
 
             void PutChar(uint8_t c, uint32_t cx, uint32_t cy, uint32_t fg, uint32_t bg);
             void PutString(const uint8_t* c, uint32_t cx, uint32_t cy, uint32_t fg, uint32_t bg, uint16_t w);
-            void PutString(const common::String c, uint32_t cx, uint32_t cy, uint32_t fg, uint32_t bg, uint16_t w);
+            void PutString(const String c, uint32_t cx, uint32_t cy, uint32_t fg, uint32_t bg, uint16_t w);
 
             uint32_t GetWidth() const;
             uint32_t GetHeight() const;

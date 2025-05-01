@@ -6,7 +6,7 @@ void printf(const char*, ...);
 
 Widget::Widget(Widget* parent, int32_t x, int32_t y,
         uint32_t w, uint32_t h, uint8_t r,
-        uint8_t g, uint8_t b, uint8_t classNum, myos::common::String* stringText) 
+        uint8_t g, uint8_t b, uint8_t classNum, String* stringText) 
         : parent(parent),
           x(x),
           y(y),
@@ -79,7 +79,7 @@ bool Widget::ContainsCoordinate(int32_t x, int32_t y) {
 
 CompositeWidget::CompositeWidget(Widget* parent, int32_t x, int32_t y,
             uint32_t w, uint32_t h, uint8_t r,
-            uint8_t g, uint8_t b, uint8_t classNum, myos::common::String* stringText) 
+            uint8_t g, uint8_t b, uint8_t classNum, String* stringText) 
             : Widget(parent, x, y, w, h, r, g, b, classNum, stringText),
               focussedChild(0),
               numChildren(0) {

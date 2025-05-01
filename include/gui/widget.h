@@ -1,7 +1,8 @@
 #ifndef __MYOS__GUI__WIDGET_H
 #define __MYOS__GUI__WIDGET_H
 
-#include "common/types.h"
+#include <stdint.h>
+#include <string.h>
 #include "drivers/svga.h"
 #include "common/graphicscontext.h"
 
@@ -11,7 +12,7 @@ namespace myos {
         public:
             Widget(Widget* parent, int32_t x, int32_t y,
                     uint32_t w, uint32_t h, uint8_t r,
-                    uint8_t g, uint8_t b, uint8_t classNum, common::String* stringText);
+                    uint8_t g, uint8_t b, uint8_t classNum, String* stringText);
             ~Widget();
 
             virtual void GetFocus(Widget* widget);
@@ -32,7 +33,7 @@ namespace myos {
             int32_t x, y;
             uint32_t w, h;
             uint8_t r, g, b;
-            common::String* stringText;
+            String* stringText;
             uint8_t classNum; //dektop = 0 window = 1 string = 2
         protected:
             Widget* parent;
@@ -43,7 +44,7 @@ namespace myos {
         public:
             CompositeWidget(Widget* parent, int32_t x, int32_t y,
                     uint32_t w, uint32_t h, uint8_t r,
-                    uint8_t g, uint8_t b, uint8_t classNum, common::String* stringText);
+                    uint8_t g, uint8_t b, uint8_t classNum, String* stringText);
             ~CompositeWidget();
 
             virtual void GetFocus(Widget* widget);

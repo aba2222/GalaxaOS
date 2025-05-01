@@ -2,6 +2,7 @@
 #define __MYOS__GUI__WINDOW_H
 
 #include <stdint.h>
+#include <string.h>
 #include "gui/widget.h"
 #include "gui/desktop.h"
 
@@ -11,7 +12,7 @@ namespace myos {
         public:
             Window(Widget* parent, int32_t x, int32_t y,
                     uint32_t w, uint32_t h, uint8_t r,
-                    uint8_t g, uint8_t b, common::String* stringText);
+                    uint8_t g, uint8_t b, String* stringText);
             ~Window();
 
             void OnMouseDown(int32_t x, int32_t y, uint8_t button);

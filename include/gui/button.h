@@ -2,13 +2,14 @@
 #define __MYOS__GUI__BUTTON_H
 
 #include <stdint.h>
+#include <string.h>
 #include "gui/widget.h"
 
 namespace myos {
     namespace gui {
         class Button : public Widget {
         public:
-            Button(Widget* parent, int32_t x, int32_t y, uint32_t w, uint32_t h, uint8_t r, uint8_t g, uint8_t b, common::String* text);
+            Button(Widget* parent, int32_t x, int32_t y, uint32_t w, uint32_t h, uint8_t r, uint8_t g, uint8_t b, String* text);
             
             void SetOnClick(void (*handler)());
             virtual void Draw(common::SuperGraphicsContext* gc) override;

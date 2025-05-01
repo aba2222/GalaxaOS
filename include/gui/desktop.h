@@ -2,6 +2,7 @@
 #define __MYOS__GUI__DESKTOP_H
 
 #include <stdint.h>
+#include <string.h>
 #include "gui/widget.h"
 #include "gui/window.h"
 #include "gui/stringtext.h"
@@ -13,7 +14,7 @@ namespace myos {
         class Desktop : public CompositeWidget, public drivers::MouseEventHandler, public drivers::KeyBoardEventHandler {
         public:
             Desktop(uint32_t w, uint32_t h, uint8_t r,
-                    uint8_t g, uint8_t b, common::SuperGraphicsContext* gc, common::String* shellText);
+                    uint8_t g, uint8_t b, common::SuperGraphicsContext* gc, String* shellText);
             ~Desktop();
             
             void OnMouseDown(uint8_t button);

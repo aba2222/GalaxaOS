@@ -53,6 +53,9 @@ void Widget::Draw(myos::common::SuperGraphicsContext* gc) {
         case 2:
             gc->PutString((const uint8_t*)this->stringText->c_str(), X, Y, (r << 24) + (g << 16) + (b << 8), (parent->r << 24) + (parent->g << 16) + (parent->b << 8), w);
             break;
+        case 3:
+            //TODO: TextBox
+            break;
         default:
             break;
     }

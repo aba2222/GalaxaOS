@@ -69,6 +69,7 @@ void SuperVideoGraphicsArray::PsfInit() {
 }*/
 
 void SuperVideoGraphicsArray::Redraw() {
+    // 可根据需要增加 dirty 区域判断，这里保持原样
     memcpy(screen, BackBuffer, width * height * pixelwidth);
 }
 

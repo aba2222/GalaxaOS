@@ -126,6 +126,7 @@ String timeString = "xx/xx xx:xx:xx";
 void RedrawDesktop() {
     while (true) {
         globalDesktop->Draw();
+        TaskManager::nowTaskManager->NanoSleep(100000);
     }
 }
 

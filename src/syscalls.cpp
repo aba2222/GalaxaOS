@@ -1,4 +1,5 @@
 #include "syscalls.h"
+#include "memorymanager.h"
 
 using namespace myos;
 using namespace myos::common;
@@ -15,11 +16,32 @@ uint32_t SysCallHandler::HandleInterrupt(uint32_t esp) {
     CPUState* cpu = (CPUState*) esp;
 
     switch(cpu->eax) {
-        case 4:
+        case 1:  // exit
+            printf("Process exited with code %d\n", cpu->ebx);
+            // 假设这只是个演示，不终止进程
+            break;
+
+        case 3:  // read
+            // 从设备/输入模拟读取，例如从键盘缓冲区读取
+            // 这里只是个假设，实际应该有 keyboard driver
+            ((char*)cpu->ebx)[0] = 'A'; // 假设返回一个字符 A
+            cpu->eax = 1;               // 返回读取的字节数
+            break;
+
+        case 4:  // write (已有)
             printf((const char*)cpu->ebx);
             break;
-        
+
+        case 5:  // malloc
+            cpu->eax = (uint32_t)MemoryManager::activeMemoryManager->malloc(cpu->ebx);
+            break;
+
+        case 6:  // free
+            MemoryManager::activeMemoryManager->free((void*)cpu->ebx);
+            break;
+
         default:
+            printf("Unknown syscall: %d\n", cpu->eax);
             break;
     }
 

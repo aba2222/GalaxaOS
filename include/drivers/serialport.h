@@ -1,7 +1,7 @@
 #ifndef __MYOS__DRIVERS__SERIALPORTS_H
 #define __MYOS__DRIVERS__SERIALSPRTS_H
 
-#include "common/types.h"
+#include "string.h"
 #include "hardwarecommunication/port.h"
 
 namespace myos {
@@ -18,6 +18,7 @@ namespace myos {
             SerialPort(PortAddresses addresse);
             int IsTransmitEmpty();
             void WriteSerial(char a);
+            void WriteSerial(String a);
         private:
             hardwarecommunication::Port8Bit dataPort;
         };

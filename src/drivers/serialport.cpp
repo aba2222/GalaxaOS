@@ -32,3 +32,9 @@ void SerialPort::WriteSerial(char a) {
     while (IsTransmitEmpty() == 0);
     dataPort.Write(a, 0);
  }
+
+ void SerialPort::WriteSerial(String a) {
+    for(size_t i = 0; i < a.GetLength(); i++) {
+        WriteSerial((char)(a[i]));
+    }
+ }

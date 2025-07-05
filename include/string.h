@@ -1,6 +1,8 @@
 #ifndef __STRING_H
 #define __STRING_H
 
+#include <stdint.h>
+
 class String {
 public:
     // 默认构造函数
@@ -107,7 +109,7 @@ public:
     }
 
     // 获取字符串长度
-    size_t Length() const {
+    size_t GetLength() const {
         return length;
     }
 

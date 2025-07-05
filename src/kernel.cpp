@@ -267,7 +267,7 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
         StringText timeStringText(&tool1, 10, 3, 330, 200, 0xFF, 0xFF, 0xFF, &timeString);
         tool1.AddChild(&timeStringText);
 
-        String windowsName1 = "Window 1";
+        String windowsName1 = "Driver Window";
         Window win1(&desktop, 114, 500, 350, 230, 0xFF, 0x00, 0x00, &windowsName1);
         List lit1(&win1, 0, 20, 350, 210, 0xFF, 0x00, 0x00, 0, new String("List 1"));
         for(int driverIndex = 0; driverIndex < drvManger.numDrivers; driverIndex++) {
@@ -283,9 +283,7 @@ extern "C" void kernelMain(multiboot_info_t* multiboot_structure, uint32_t magic
         win2.AddChild(&but1);
         desktop.AddChild(&win2);
     #endif
-    serialPort.WriteSerial('G');serialPort.WriteSerial('a'); serialPort.WriteSerial('l');
-    serialPort.WriteSerial('a');serialPort.WriteSerial('x');serialPort.WriteSerial('a');
-    serialPort.WriteSerial('O');serialPort.WriteSerial('S');
+    serialPort.WriteSerial(String("GalaxaOS 0.0.1\n\r"));
 
     Task* redrawTask = new Task(&gdt, RedrawDesktop);
     taskmanager.AddTask(redrawTask);

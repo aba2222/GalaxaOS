@@ -1,5 +1,6 @@
 #include "syscalls.h"
 #include "memorymanager.h"
+#include "hardwarecommunication/multitasking.h"
 
 using namespace myos;
 using namespace myos::common;
@@ -18,7 +19,7 @@ uint32_t SysCallHandler::HandleInterrupt(uint32_t esp) {
     switch(cpu->eax) {
         case 1:  // exit
             printf("Process exited with code %d\n", cpu->ebx);
-            // 假设这只是个演示，不终止进程
+            TaskManager::nowTaskManager->TerminateTask();
             break;
 
         case 3:  // read
@@ -28,7 +29,7 @@ uint32_t SysCallHandler::HandleInterrupt(uint32_t esp) {
             cpu->eax = 1;               // 返回读取的字节数
             break;
 
-        case 4:  // write (已有)
+        case 4:  // write
             printf((const char*)cpu->ebx);
             break;
 

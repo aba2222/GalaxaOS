@@ -30,6 +30,9 @@ namespace myos {
 
             virtual void Animate();
 
+            const uint32_t GetWidth() const { return w; }
+            const uint32_t GetHeight() const { return h; }
+
             int32_t x, y;
             uint32_t w, h;
             uint8_t r, g, b;

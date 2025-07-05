@@ -25,9 +25,14 @@ MemoryManager::~MemoryManager() {
 }
 
 void* MemoryManager::malloc(size_t size) {
+    // align size to 8 bytes
+    if (size == 0) return 0;
+    size_t alignment = 8;
+    size_t aligned_size = (size + alignment - 1) & ~(alignment - 1);
+
     MemoryChunk* result = 0;
     for (MemoryChunk* chunk = first; chunk != 0 && result == 0; chunk = chunk->next) {
-        if (chunk->size > size && !chunk->allocated) {
+        if (chunk->size > aligned_size && !chunk->allocated) {
             result = chunk;
         }
     }

@@ -29,8 +29,8 @@ void Window::OnMouseUp(int32_t x, int32_t y, uint8_t button) {
 
 void Window::OnMouseMove(int32_t ox, int32_t oy, int32_t nx, int32_t ny) {
     if (Dragging) {
-        if((this->x + (nx - ox)) > 0 && (this->x + (nx - ox) + w) < 1024) this->x += (nx - ox);
-        if((this->y + (ny - oy)) > 0 && (this->y + (ny - oy) + h) < 768) this->y += (ny - oy);
+        if((this->x + (nx - ox)) > 0 && (this->x + (nx - ox) + w) < parent->GetWidth()) this->x += (nx - ox);
+        if((this->y + (ny - oy)) > 0 && (this->y + (ny - oy) + h) < parent->GetHeight()) this->y += (ny - oy);
     }
     CompositeWidget::OnMouseMove(ox,oy,nx, ny);
 
